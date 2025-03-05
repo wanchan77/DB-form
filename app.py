@@ -3,14 +3,19 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 # === Google Sheets 接続設定 ===
-# Streamlit Secrets から認証情報を取得（JSON解析不要）
-credentials_info = st.secrets["google_sheets"]
+st.write("✅ 認証情報をロード中...")
+credentials_info = st.secrets["google_sheets"]  # JSONオブジェクトとして取得
+st.write("✅ 認証情報の形式: ", type(credentials_info))  # 確認用
+
+# 認証を作成
 creds = Credentials.from_service_account_info(credentials_info)
 client = gspread.authorize(creds)
 
 # スプレッドシートの設定
 spreadsheet = client.open_by_key("1hPxEranr8y9teHaiT-6MMShsljbCRLhhrv3huMmOmaY")
 sheet = spreadsheet.sheet1  # 1つ目のシートを選択
+st.write("✅ Google Sheets に接続完了！")
+
 
 # === ページ管理のためのセッション変数を初期化 ===
 if "page" not in st.session_state:
