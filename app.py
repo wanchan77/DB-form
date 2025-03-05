@@ -1,11 +1,12 @@
 import streamlit as st
 import gspread
 from google.oauth2.service_account import Credentials
+import json
 
 # === Google Sheets 接続設定 ===
-# 認証情報の読み込み
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = Credentials.from_service_account_file("credentials.json", scopes=scope)
+# Streamlit Secrets から認証情報を取得
+credentials_info = json.loads(st.secrets["google_sheets"])  # secrets.toml から読み込み
+creds = Credentials.from_service_account_info(credentials_info)
 client = gspread.authorize(creds)
 
 # スプレッドシートの設定
@@ -91,3 +92,4 @@ elif st.session_state["page"] == "summary":
         user_data = list(st.session_state["user_input"].values())  # データをリスト化
         sheet.append_row(user_data)  # スプレッドシートにデータを追加
         st.success("データをGoogle Sheetsに送信しました！")
+
