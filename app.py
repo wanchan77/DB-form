@@ -8,11 +8,13 @@ st.write("✅ 認証情報をロード中...")
 # secrets から Google 認証情報を取得（明示的に dict に変換）
 credentials_info = dict(st.secrets["google_sheets"])
 
-# private_key の改行を修正
-credentials_info["private_key"] = credentials_info["private_key"].replace("\\n", "\n")
+# private_key の改行を再処理
+credentials_info["private_key"] = credentials_info["private_key"].encode("utf-8").decode("unicode_escape")
 
 st.write("✅ 認証情報の形式: ", type(credentials_info))
+st.write("✅ private_key の長さ: ", len(credentials_info["private_key"]))
 st.write("✅ private_key の先頭50文字: ", credentials_info["private_key"][:50])
+st.write("✅ private_key の最後の50文字: ", credentials_info["private_key"][-50:])
 
 # 認証を作成
 creds = Credentials.from_service_account_info(credentials_info)
