@@ -8,8 +8,8 @@ st.write("✅ 認証情報をロード中...")
 # secrets から Google 認証情報を取得（明示的に dict に変換）
 credentials_info = dict(st.secrets["google_sheets"])
 
-# private_key の改行を適切に処理
-credentials_info["private_key"] = credentials_info["private_key"].replace("\\n", "\n")
+# private_key の改行を完全修正
+credentials_info["private_key"] = "\n".join(credentials_info["private_key"].split("\\n"))
 
 st.write("✅ 認証情報の形式: ", type(credentials_info))
 st.write("✅ private_key の長さ: ", len(credentials_info["private_key"]))
@@ -23,6 +23,7 @@ try:
     st.write("✅ Google Sheets に接続完了！")
 except Exception as e:
     st.error(f"❌ 認証エラー: {e}")
+
 
 
 # === ページ管理のためのセッション変数を初期化 ===
