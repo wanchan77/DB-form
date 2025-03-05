@@ -1,11 +1,10 @@
 import streamlit as st
 import gspread
 from google.oauth2.service_account import Credentials
-import json
 
 # === Google Sheets 接続設定 ===
-# Streamlit Secrets から認証情報を取得
-credentials_info = json.loads(st.secrets["google_sheets"])  # secrets.toml から読み込み
+# Streamlit Secrets から認証情報を取得（JSON解析不要）
+credentials_info = st.secrets["google_sheets"]
 creds = Credentials.from_service_account_info(credentials_info)
 client = gspread.authorize(creds)
 
