@@ -8,8 +8,8 @@ st.write("✅ 認証情報をロード中...")
 # secrets から Google 認証情報を取得（明示的に dict に変換）
 credentials_info = dict(st.secrets["google_sheets"])
 
-# private_key の改行を再処理
-credentials_info["private_key"] = credentials_info["private_key"].encode("utf-8").decode("unicode_escape")
+# private_key の改行を適切に処理
+credentials_info["private_key"] = credentials_info["private_key"].replace("\\n", "\n")
 
 st.write("✅ 認証情報の形式: ", type(credentials_info))
 st.write("✅ private_key の長さ: ", len(credentials_info["private_key"]))
@@ -17,13 +17,12 @@ st.write("✅ private_key の先頭50文字: ", credentials_info["private_key"][
 st.write("✅ private_key の最後の50文字: ", credentials_info["private_key"][-50:])
 
 # 認証を作成
-creds = Credentials.from_service_account_info(credentials_info)
-client = gspread.authorize(creds)
-
-# スプレッドシートの設定
-spreadsheet = client.open_by_key("1hPxEranr8y9teHaiT-6MMShsljbCRLhhrv3huMmOmaY")
-sheet = spreadsheet.sheet1  # 1つ目のシートを選択
-st.write("✅ Google Sheets に接続完了！")
+try:
+    creds = Credentials.from_service_account_info(credentials_info)
+    client = gspread.authorize(creds)
+    st.write("✅ Google Sheets に接続完了！")
+except Exception as e:
+    st.error(f"❌ 認証エラー: {e}")
 
 
 # === ページ管理のためのセッション変数を初期化 ===
