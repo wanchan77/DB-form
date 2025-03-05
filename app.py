@@ -3,36 +3,25 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 # === Google Sheets 接続設定 ===
-st.write("✅ 認証情報をロード中...")
+st.write("\u2705 認証情報をロード中...")
 
 # secrets から Google 認証情報を取得（明示的に dict に変換）
 credentials_info = dict(st.secrets["google_sheets"])
 
-# private_key の改行を完全修正
-credentials_info["private_key"] = "\n".join(credentials_info["private_key"].split("\\n"))
+# 正しい OAuth スコープを設定
+scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 
-st.write("✅ 認証情報の形式: ", type(credentials_info))
-st.write("✅ private_key の長さ: ", len(credentials_info["private_key"]))
-st.write("✅ private_key の先頭50文字: ", credentials_info["private_key"][:50])
-st.write("✅ private_key の最後の50文字: ", credentials_info["private_key"][-50:])
+# 認証情報を設定
+creds = Credentials.from_service_account_info(credentials_info, scopes=scope)
+client = gspread.authorize(creds)
 
-# 認証を作成
+# Google Sheets に接続
 try:
-    creds = Credentials.from_service_account_info(credentials_info)
-    client = gspread.authorize(creds)
-    st.write("✅ Google Sheets に接続完了！")
-except Exception as e:
-    st.error(f"❌ 認証エラー: {e}")
-
-try:
-    # スプレッドシートに接続
     spreadsheet = client.open_by_key("1hPxEranr8y9teHaiT-6MMShsljbCRLhhrv3huMmOmaY")
-    sheet = spreadsheet.sheet1  # 1つ目のシートを選択
-    st.write("✅ Google Sheets に接続成功！")
+    sheet = spreadsheet.sheet1
+    st.write("\u2705 Google Sheets に接続成功！")
 except Exception as e:
-    st.error(f"❌ Google Sheets への接続エラー: {e}")
-
-
+    st.error(f"\u274C Google Sheets への接続エラー: {e}")
 
 # === ページ管理のためのセッション変数を初期化 ===
 if "page" not in st.session_state:
@@ -76,29 +65,12 @@ if st.session_state["page"] == "page1":
         else:
             next_page("page2C")
 
-# ** 2ページ目A **
-elif st.session_state["page"] == "page2A":
-    st.title("フォーム入力 - Step 2A")
-    input_value = st.text_input("追加の入力をしてください")
-    st.session_state["user_input"]["追加入力"] = input_value
-
-    if st.button("完了"):
-        next_page("summary")
-
-# ** 2ページ目B **
-elif st.session_state["page"] == "page2B":
-    st.title("フォーム入力 - Step 2B")
-    input_value = st.text_input("詳細を入力してください")
-    st.session_state["user_input"]["詳細入力"] = input_value
-
-    if st.button("完了"):
-        next_page("summary")
-
-# ** 2ページ目C **
-elif st.session_state["page"] == "page2C":
-    st.title("フォーム入力 - Step 2C")
-    input_value = st.text_area("特別な詳細を記入してください")
-    st.session_state["user_input"]["特別入力"] = input_value
+# ** 2ページ目 **
+elif st.session_state["page"] in ["page2A", "page2B", "page2C"]:
+    st.title("フォーム入力 - Step 2")
+    input_label = "追加の入力をしてください" if st.session_state["page"] == "page2A" else "詳細を入力してください"
+    input_value = st.text_area(input_label)
+    st.session_state["user_input"]["入力"] = input_value
 
     if st.button("完了"):
         next_page("summary")
@@ -111,11 +83,12 @@ elif st.session_state["page"] == "summary":
     # **Google Sheets にデータを送信**
     if st.button("データを送信"):
         try:
-            st.write("✅ Google Sheets にデータを追加中...")
+            st.write("\u2705 Google Sheets にデータを追加中...")
             user_data = list(st.session_state["user_input"].values())  # データをリスト化
             sheet.append_row(user_data)  # スプレッドシートにデータを追加
-            st.success("✅ データをGoogle Sheetsに送信しました！")
+            st.success("\u2705 データをGoogle Sheetsに送信しました！")
         except Exception as e:
-            st.error(f"❌ Google Sheets 書き込みエラー: {e}")
+            st.error(f"\u274C Google Sheets 書き込みエラー: {e}")
+
 
 
