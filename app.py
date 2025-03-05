@@ -4,8 +4,15 @@ from google.oauth2.service_account import Credentials
 
 # === Google Sheets 接続設定 ===
 st.write("✅ 認証情報をロード中...")
-credentials_info = st.secrets["google_sheets"]  # JSONオブジェクトとして取得
-st.write("✅ 認証情報の形式: ", type(credentials_info))  # 確認用
+
+# secrets から Google 認証情報を取得（明示的に dict に変換）
+credentials_info = dict(st.secrets["google_sheets"])
+
+# private_key の改行を修正
+credentials_info["private_key"] = credentials_info["private_key"].replace("\\n", "\n")
+
+st.write("✅ 認証情報の形式: ", type(credentials_info))
+st.write("✅ private_key の先頭50文字: ", credentials_info["private_key"][:50])
 
 # 認証を作成
 creds = Credentials.from_service_account_info(credentials_info)
