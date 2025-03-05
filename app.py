@@ -24,6 +24,14 @@ try:
 except Exception as e:
     st.error(f"❌ 認証エラー: {e}")
 
+try:
+    # スプレッドシートに接続
+    spreadsheet = client.open_by_key("1hPxEranr8y9teHaiT-6MMShsljbCRLhhrv3huMmOmaY")
+    sheet = spreadsheet.sheet1  # 1つ目のシートを選択
+    st.write("✅ Google Sheets に接続成功！")
+except Exception as e:
+    st.error(f"❌ Google Sheets への接続エラー: {e}")
+
 
 
 # === ページ管理のためのセッション変数を初期化 ===
@@ -102,7 +110,12 @@ elif st.session_state["page"] == "summary":
 
     # **Google Sheets にデータを送信**
     if st.button("データを送信"):
-        user_data = list(st.session_state["user_input"].values())  # データをリスト化
-        sheet.append_row(user_data)  # スプレッドシートにデータを追加
-        st.success("データをGoogle Sheetsに送信しました！")
+        try:
+            st.write("✅ Google Sheets にデータを追加中...")
+            user_data = list(st.session_state["user_input"].values())  # データをリスト化
+            sheet.append_row(user_data)  # スプレッドシートにデータを追加
+            st.success("✅ データをGoogle Sheetsに送信しました！")
+        except Exception as e:
+            st.error(f"❌ Google Sheets 書き込みエラー: {e}")
+
 
