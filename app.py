@@ -1,0 +1,93 @@
+import streamlit as st
+import gspread
+from google.oauth2.service_account import Credentials
+
+# === Google Sheets 接続設定 ===
+# 認証情報の読み込み
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+creds = Credentials.from_service_account_file("credentials.json", scopes=scope)
+client = gspread.authorize(creds)
+
+# スプレッドシートの設定
+spreadsheet = client.open_by_key("1hPxEranr8y9teHaiT-6MMShsljbCRLhhrv3huMmOmaY")
+sheet = spreadsheet.sheet1  # 1つ目のシートを選択
+
+# === ページ管理のためのセッション変数を初期化 ===
+if "page" not in st.session_state:
+    st.session_state["page"] = "page1"
+
+if "user_input" not in st.session_state:
+    st.session_state["user_input"] = {}
+
+# ページ遷移関数
+def next_page(next_page_name):
+    st.session_state["page"] = next_page_name
+
+# ** 1ページ目 **
+if st.session_state["page"] == "page1":
+    st.title("フォーム入力 - Step 1")
+
+    scope = st.selectbox("どのScopeですか？", ["Scope1", "Scope2"])
+    st.session_state["user_input"]["Scope"] = scope
+
+    if scope == "Scope1":
+        equipment_options = ["ボイラー", "発電機", "その他"]
+        fuel_options = ["石炭", "LNG", "重油"]
+    else:
+        equipment_options = ["空調", "照明", "その他"]
+        fuel_options = ["電気", "太陽光", "その他"]
+
+    equipment = st.selectbox("どの設備の施策ですか？", equipment_options)
+    st.session_state["user_input"]["設備"] = equipment
+
+    fuel = st.selectbox("どの燃料ですか？", fuel_options)
+    st.session_state["user_input"]["燃料"] = fuel
+
+    formula_template = st.selectbox("式はテンプレですか？", ["1", "2", "3", "4", "5"])
+    st.session_state["user_input"]["テンプレ"] = formula_template
+
+    if st.button("次へ"):
+        if formula_template in ["1", "2"]:
+            next_page("page2A")
+        elif formula_template in ["3", "4"]:
+            next_page("page2B")
+        else:
+            next_page("page2C")
+
+# ** 2ページ目A **
+elif st.session_state["page"] == "page2A":
+    st.title("フォーム入力 - Step 2A")
+    input_value = st.text_input("追加の入力をしてください")
+    st.session_state["user_input"]["追加入力"] = input_value
+
+    if st.button("完了"):
+        next_page("summary")
+
+# ** 2ページ目B **
+elif st.session_state["page"] == "page2B":
+    st.title("フォーム入力 - Step 2B")
+    input_value = st.text_input("詳細を入力してください")
+    st.session_state["user_input"]["詳細入力"] = input_value
+
+    if st.button("完了"):
+        next_page("summary")
+
+# ** 2ページ目C **
+elif st.session_state["page"] == "page2C":
+    st.title("フォーム入力 - Step 2C")
+    input_value = st.text_area("特別な詳細を記入してください")
+    st.session_state["user_input"]["特別入力"] = input_value
+
+    if st.button("完了"):
+        next_page("summary")
+
+# ** サマリーページ **
+elif st.session_state["page"] == "summary":
+    st.title("入力内容の確認")
+    st.write(st.session_state["user_input"])
+
+    # **Google Sheets にデータを送信**
+    if st.button("データを送信"):
+        user_data = list(st.session_state["user_input"].values())  # データをリスト化
+        sheet.append_row(user_data)  # スプレッドシートにデータを追加
+        st.success("データをGoogle Sheetsに送信しました！")
