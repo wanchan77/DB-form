@@ -39,7 +39,7 @@ def next_page(next_page_name):
 
 # ** 1ページ目 **
 if st.session_state["page"] == "page1":
-    st.title("フォーム入力 - Step 1")
+    st.title("施策基本情報入力")
     scope = st.selectbox("どのScopeですか？", ["Scope1", "Scope2"])
     st.session_state["user_input"]["Scope"] = scope
     
@@ -48,7 +48,7 @@ if st.session_state["page"] == "page1":
         fuel_options = ["軽油", "原油", "灯油", "LPG", "LNG", "揮発油", "コンデンセート", "ナフサ", "A重油", "B・C重油", "石油アスファルト", "石油コークス", "水素ガス", "その他可燃性天然ガス", "原料炭", "一般炭", "無煙炭", "石炭コークス", "コールタール", "コークス炉ガス", "高炉ガス", "転炉ガス", "都市ガス", "その他燃料", "全体(カーボンオフセット)"]
     else:
         equipment_options = ["空調(電気)(パッケージ式)", "空調(電気)(冷凍機)", "空調(電気)(ウォーターチラー水冷式)", "空調(電気)(ウォーターチラー空冷式)", "冷蔵/冷凍", "給湯", "照明", "サーバー機器", "エレベータ", "コンプレッサー", "ポンプ", "送風機/給気・排気ファン", "電気自動車", "電動トラック", "その他(SCOPE2)", "SCOPE2全体"]
-        fuel_options = ["産業用蒸気", "産業用以外の蒸気", "温水", "冷水", "電力", "その他", "全体(カーボンオフセット)"]
+        fuel_options = ["電力","産業用蒸気", "産業用以外の蒸気", "温水", "冷水", "その他", "全体(カーボンオフセット)"]
 
     equipment = st.selectbox("どの設備の施策ですか？", equipment_options)
     st.session_state["user_input"]["設備"] = equipment
@@ -58,6 +58,10 @@ if st.session_state["page"] == "page1":
 
     formula_template = st.selectbox("式はテンプレですか？", ["1(運用改善系)", "2(設備投資系)", "3(燃料転換系_1)", "4(燃料転換系_2)", "5(自由入力)"])
     st.session_state["user_input"]["テンプレ"] = formula_template
+
+    if formula_template == "5(自由入力)":
+        measure_type = st.selectbox("施策の種類はどれですか？", ["1(運用改善系)", "2(設備投資系)", "3(燃料転換系_1)", "4(燃料転換系_2)", "5(緑施策)"])
+        st.session_state["user_input"]["施策の種類"] = measure_type
 
     measures = st.text_input("施策名はなんですか？")
     st.session_state["user_input"]["施策名"] = measures
@@ -71,12 +75,14 @@ if st.session_state["page"] == "page1":
             next_page("page2C")
         elif formula_template.startswith("4"):
             next_page("page2D")
+        elif formula_template.startswith("5") and measure_type == "5(緑施策)":
+            next_page("page2F")
         else:
             next_page("page2E")
 
 # ** 2ページ目 **
 elif st.session_state["page"] == "page2A":
-    st.title("フォーム入力 - Step 2A (運用改善系)")
+    st.title("運用改善系施策式入力")
     input_value = st.text_area("運用改善の詳細を入力してください")
     st.session_state["user_input"]["運用改善詳細"] = input_value
 
@@ -115,9 +121,18 @@ elif st.session_state["page"] == "page2E":
     if st.button("完了"):
         next_page("summary")
 
+# ** 2ページ目F (緑施策) **
+elif st.session_state["page"] == "page2F":
+    st.title("フォーム入力 - Step 2F (緑施策)")
+    input_value = st.text_area("緑施策の詳細を入力してください")
+    st.session_state["user_input"]["緑施策詳細"] = input_value
+
+    if st.button("完了"):
+        next_page("summary")
+
 # ** サマリーページ **
 elif st.session_state["page"] == "summary":
-    st.title("入力内容の確認")
+    st.title("入力情報確認")
     st.write(st.session_state["user_input"])
 
     # **Google Sheets にデータを送信**
