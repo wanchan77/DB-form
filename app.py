@@ -85,8 +85,8 @@ elif st.session_state["page"] == "page2A":
     st.title("運用改善系施策式入力")
     st.write(f"現在入力中の施策：{st.session_state['user_input']['設備']} {st.session_state['user_input']['施策名']} {st.session_state['user_input']['燃料']}")
 
-    ghg_formula = st.text_area("GHG削減量計算式", f"CO2削減量<t-CO2/年>={st.session_state['user_input']['設備']}{{st.session_state['user_input']['燃料']}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>")
-    cost_formula = st.text_area("コスト削減額計算式", f"コスト削減額<円/年>={st.session_state['user_input']['設備']}{{st.session_state['user_input']['燃料']}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>÷電気の排出係数<t-CO2/kWh>×電気料金<円/kWh>")
+    ghg_formula = st.text_area("GHG削減量計算式", f"CO2削減量<t-CO2/年>={st.session_state['user_input']['設備']}{{{st.session_state['user_input']['燃料']}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>")
+    cost_formula = st.text_area("コスト削減額計算式", f"コスト削減額<円/年>={st.session_state['user_input']['設備']}{{{st.session_state['user_input']['燃料']}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>÷電気の排出係数<t-CO2/kWh>×電気料金<円/kWh>")
     investment_formula = st.text_area("投資額計算式", "なし")
     additional_investment_formula = st.text_area("追加投資額計算式", "なし")
 
