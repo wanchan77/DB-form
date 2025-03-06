@@ -105,7 +105,7 @@ elif st.session_state["page"] == "page2A":
     predefined_values = [
         ("電気の排出係数", 0.000434, "t-CO2/kWh", "・環境省令和5年：0.000434(t-CO2/kWh)\nhttps://ghg-santeikohyo.env.go.jp/files/calc/r05_coefficient_rev4.pdf\n\n・環境省：0.000488(t-CO2/kWh)\n環境省のエクセル"),
         ("電気料金", 22.97, "円/kWh", "・新電力ネット(高圧)22.97(円/kWh)\nhttps://pps-net.org/unit\n\n・環境省：12.1587 (円/kWh)\n環境省のエクセル"),
-        ("想定稼働年数", 10, "年", "")
+        ("想定稼働年数", 10.0, "年", "")
     ]
 
     for i, (name, value, unit, description) in enumerate(predefined_values):
