@@ -34,43 +34,49 @@ if "user_input" not in st.session_state:
 def next_page(next_page_name):
     st.session_state["page"] = next_page_name
 
+# 設備と燃料の選択肢
+...
+
 # ** 1ページ目 **
-if st.session_state["page"] == "page1":
-    st.title("フォーム入力 - Step 1")
-
-    scope = st.selectbox("どのScopeですか？", ["Scope1", "Scope2"])
-    st.session_state["user_input"]["Scope"] = scope
-
-    if scope == "Scope1":
-        equipment_options = ["ボイラー", "発電機", "その他"]
-        fuel_options = ["石炭", "LNG", "重油"]
-    else:
-        equipment_options = ["空調", "照明", "その他"]
-        fuel_options = ["電気", "太陽光", "その他"]
-
-    equipment = st.selectbox("どの設備の施策ですか？", equipment_options)
-    st.session_state["user_input"]["設備"] = equipment
-
-    fuel = st.selectbox("どの燃料ですか？", fuel_options)
-    st.session_state["user_input"]["燃料"] = fuel
-
-    formula_template = st.selectbox("式はテンプレですか？", ["1", "2", "3", "4", "5"])
-    st.session_state["user_input"]["テンプレ"] = formula_template
-
-    if st.button("次へ"):
-        if formula_template in ["1", "2"]:
-            next_page("page2A")
-        elif formula_template in ["3", "4"]:
-            next_page("page2B")
-        else:
-            next_page("page2C")
+...
 
 # ** 2ページ目 **
-elif st.session_state["page"] in ["page2A", "page2B", "page2C"]:
-    st.title("フォーム入力 - Step 2")
-    input_label = "追加の入力をしてください" if st.session_state["page"] == "page2A" else "詳細を入力してください"
-    input_value = st.text_area(input_label)
-    st.session_state["user_input"]["入力"] = input_value
+elif st.session_state["page"] == "page2A":
+    st.title("フォーム入力 - Step 2A (運用改善系)")
+    input_value = st.text_area("運用改善の詳細を入力してください")
+    st.session_state["user_input"]["運用改善詳細"] = input_value
+
+    if st.button("完了"):
+        next_page("summary")
+
+elif st.session_state["page"] == "page2B":
+    st.title("フォーム入力 - Step 2B (設備投資系)")
+    input_value = st.text_area("設備投資の詳細を入力してください")
+    st.session_state["user_input"]["設備投資詳細"] = input_value
+
+    if st.button("完了"):
+        next_page("summary")
+
+elif st.session_state["page"] == "page2C":
+    st.title("フォーム入力 - Step 2C (燃料転換系_1)")
+    input_value = st.text_area("燃料転換（第一種）の詳細を入力してください")
+    st.session_state["user_input"]["燃料転換1詳細"] = input_value
+
+    if st.button("完了"):
+        next_page("summary")
+
+elif st.session_state["page"] == "page2D":
+    st.title("フォーム入力 - Step 2D (燃料転換系_2)")
+    input_value = st.text_area("燃料転換（第二種）の詳細を入力してください")
+    st.session_state["user_input"]["燃料転換2詳細"] = input_value
+
+    if st.button("完了"):
+        next_page("summary")
+
+elif st.session_state["page"] == "page2E":
+    st.title("フォーム入力 - Step 2E (自由入力)")
+    input_value = st.text_area("自由入力の詳細を記入してください")
+    st.session_state["user_input"]["自由入力詳細"] = input_value
 
     if st.button("完了"):
         next_page("summary")
@@ -89,6 +95,5 @@ elif st.session_state["page"] == "summary":
             st.success("\u2705 データをGoogle Sheetsに送信しました！")
         except Exception as e:
             st.error(f"\u274C Google Sheets 書き込みエラー: {e}")
-
 
 
