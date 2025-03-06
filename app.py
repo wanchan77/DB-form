@@ -60,7 +60,7 @@ if st.session_state["page"] == "page1":
     st.session_state["user_input"]["テンプレ"] = formula_template
 
     if formula_template == "5(自由入力)":
-        measure_type = st.selectbox("施策の種類はどれですか？", ["1(運用改善系)", "2(設備投資系)", "3(燃料転換系_1)", "4(燃料転換系_2)", "5(緑施策)"])
+        measure_type = st.selectbox("施策の種類はどれですか？(自由入力の場合のみ入力)", ["1(運用改善系)", "2(設備投資系)", "3(燃料転換系_1)", "4(燃料転換系_2)", "5(緑施策)"])
         st.session_state["user_input"]["施策の種類"] = measure_type
 
     measures = st.text_input("施策名はなんですか？")
@@ -80,14 +80,19 @@ if st.session_state["page"] == "page1":
         else:
             next_page("page2E")
 
-# ** 2ページ目 **
+# ** 2ページ目A (運用改善系) **
 elif st.session_state["page"] == "page2A":
     st.title("運用改善系施策式入力")
-    input_value = st.text_area("運用改善の詳細を入力してください")
-    st.session_state["user_input"]["運用改善詳細"] = input_value
+    st.write(f"現在入力中の施策：{st.session_state['user_input']['設備']} {st.session_state['user_input']['施策名']} {st.session_state['user_input']['燃料']}")
+
+    ghg_formula = st.text_area("GHG削減量計算式", f"CO2削減量<t-CO2/年>={st.session_state['user_input']['設備']}({st.session_state['user_input']['燃料']})のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>")
+    cost_formula = st.text_area("コスト削減額計算式", f"コスト削減額<円/年>={st.session_state['user_input']['設備']}({st.session_state['user_input']['燃料']})のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>÷電気の排出係数<t-CO2/kWh>×電気料金<円/kWh>")
+    investment_formula = st.text_area("投資額計算式", "なし")
+    additional_investment_formula = st.text_area("追加投資額計算式", "なし")
 
     if st.button("完了"):
         next_page("summary")
+
 
 elif st.session_state["page"] == "page2B":
     st.title("フォーム入力 - Step 2B (設備投資系)")
