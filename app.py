@@ -38,7 +38,41 @@ def next_page(next_page_name):
 ...
 
 # ** 1ページ目 **
-...
+if st.session_state["page"] == "page1":
+    st.title("フォーム入力 - Step 1")
+    scope = st.selectbox("どのScopeですか？", ["Scope1", "Scope2"])
+    st.session_state["user_input"]["Scope"] = scope
+    
+    if scope == "Scope1":
+        equipment_options = ["空調(ボイラ)", "空調(冷凍機)", "空調(ウォータチラー空冷式)", "空調(ウォータチラー水冷式)", "空調(GHP)(パッケージ式)", "冷蔵/冷凍", "給湯", "発電", "自動車", "トラック", "重機/建機(トラック除く)", "船舶", "航空機", "溶解炉", "焼却炉", "生産用ボイラー", "バーナー", "生産用ヒーター", "クリーンルーム用空調(ボイラ)", "クリーンルーム用空調(冷凍機)", "クリーンルーム用空調(ウォータチラー空冷式)", "クリーンルーム用空調(ウォータチラー水冷式)", "クリーンルーム用空調(GHP)(パッケージ式)", "焼鈍炉", "乾燥炉", "焼結炉/焼成炉", "焼入れ炉", "鍛造炉・鍛造加熱炉", "メッキ槽・電着塗装", "焼戻し炉", "衣類用乾燥機", "工業用乾燥機", "自家用発電機", "その他(SCOPE1)", "SCOPE1全体"]
+        fuel_options = ["軽油", "原油", "灯油", "LPG", "LNG", "揮発油", "コンデンセート", "ナフサ", "A重油", "B・C重油", "石油アスファルト", "石油コークス", "水素ガス", "その他可燃性天然ガス", "原料炭", "一般炭", "無煙炭", "石炭コークス", "コールタール", "コークス炉ガス", "高炉ガス", "転炉ガス", "都市ガス", "その他燃料", "全体(カーボンオフセット)"]
+    else:
+        equipment_options = ["空調(電気)(パッケージ式)", "空調(電気)(冷凍機)", "空調(電気)(ウォーターチラー水冷式)", "空調(電気)(ウォーターチラー空冷式)", "冷蔵/冷凍", "給湯", "照明", "サーバー機器", "エレベータ", "コンプレッサー", "ポンプ", "送風機/給気・排気ファン", "電気自動車", "電動トラック", "その他(SCOPE2)", "SCOPE2全体"]
+        fuel_options = ["産業用蒸気", "産業用以外の蒸気", "温水", "冷水", "電力", "その他", "全体(カーボンオフセット)"]
+
+    equipment = st.selectbox("どの設備の施策ですか？", equipment_options)
+    st.session_state["user_input"]["設備"] = equipment
+
+    fuel = st.selectbox("どの燃料ですか？", fuel_options)
+    st.session_state["user_input"]["燃料"] = fuel
+
+    formula_template = st.selectbox("式はテンプレですか？", ["1(運用改善系)", "2(設備投資系)", "3(燃料転換系_1)", "4(燃料転換系_2)", "5(自由入力)"])
+    st.session_state["user_input"]["テンプレ"] = formula_template
+
+    measures = st.text_input("施策名はなんですか？")
+    st.session_state["user_input"]["施策名"] = measures
+
+    if st.button("次へ"):
+        if formula_template.startswith("1"):
+            next_page("page2A")
+        elif formula_template.startswith("2"):
+            next_page("page2B")
+        elif formula_template.startswith("3"):
+            next_page("page2C")
+        elif formula_template.startswith("4"):
+            next_page("page2D")
+        else:
+            next_page("page2E")
 
 # ** 2ページ目 **
 elif st.session_state["page"] == "page2A":
