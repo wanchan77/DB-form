@@ -233,7 +233,7 @@ elif st.session_state["page"] == "summary":
     if st.button("データを送信"):
         try:
             st.write("✅ Google Sheets にデータを追加中...")
-            # user_data = [st.session_state["user_input"].get(k, "") for k in st.session_state["user_input"]]  # データをリスト化
+            user_data = [st.session_state["user_input"].get(k, "") for k in st.session_state["user_input"]]  # データをリスト化
             sheet.append_row(user_data)  # スプレッドシートにデータを追加
             st.success("✅ データをGoogle Sheetsに送信しました！")
         except Exception as e:
