@@ -119,7 +119,7 @@ elif st.session_state["page"] == "page2A":
     for i in range(13):
         st.subheader(f"規定値 {i+1}")
         st.text_input(f"規定値 {i+1} の名前")
-        st.number_input(f"規定値 {i+1} の数字", min_value=0.0, step=0.01, format="%.2f")
+        st.number_input(f"規定値 {i+1} の数字", min_value=0.0, step=0.01, format="%.2f",value=None)
         st.text_input(f"規定値 {i+1} の単位")
         st.text_area(f"規定値 {i+1} の説明")
 
