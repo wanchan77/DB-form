@@ -99,7 +99,7 @@ elif st.session_state["page"] == "page2A":
         st.subheader(f"追加インプット {i+1}")
         st.text_input(f"追加インプット{i+1}の名前", "対象設備の中で施策を実施する設備の割合" if i == 0 else "")
         st.number_input(f"追加インプット{i+1}の数字", value=50.0 if i == 0 else None, min_value=0.0, step=1.0)
-        st.text_input("単位", "%" if i == 0 else "")
+        st.text_input(f"追加インプット{i+1}の単位", "%" if i == 0 else "")
 
     if st.button("完了"):
         next_page("summary")
