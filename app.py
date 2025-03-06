@@ -85,44 +85,70 @@ elif st.session_state["page"] == "page2A":
     st.title("運用改善系施策式入力")
     st.write(f"現在入力中の施策：{st.session_state['user_input']['設備']} {st.session_state['user_input']['施策名']} {st.session_state['user_input']['燃料']}")
 
-    ghg_formula = st.text_area("GHG削減量計算式", f"CO2削減量<t-CO2/年>={st.session_state['user_input']['設備']}{{{st.session_state['user_input']['燃料']}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>")
-    cost_formula = st.text_area("コスト削減額計算式", f"コスト削減額<円/年>={st.session_state['user_input']['設備']}{{{st.session_state['user_input']['燃料']}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>÷電気の排出係数<t-CO2/kWh>×電気料金<円/kWh>")
-    investment_formula = st.text_area("投資額計算式", "なし")
-    additional_investment_formula = st.text_area("追加投資額計算式", "なし")
+    # **GHG削減量計算式**
+    st.session_state["user_input"]["GHG削減量計算式"] = st.text_area(
+        "GHG削減量計算式",
+        f"CO2削減量<t-CO2/年>={st.session_state['user_input'].get('設備', '')}{{{st.session_state['user_input'].get('燃料', '')}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>"
+    )
+
+    # **コスト削減額計算式**
+    st.session_state["user_input"]["コスト削減額計算式"] = st.text_area(
+        "コスト削減額計算式",
+        f"コスト削減額<円/年>={st.session_state['user_input'].get('設備', '')}{{{st.session_state['user_input'].get('燃料', '')}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>÷電気の排出係数<t-CO2/kWh>×電気料金<円/kWh>"
+    )
+
+    # **投資額計算式**
+    st.session_state["user_input"]["投資額計算式"] = st.text_area("投資額計算式", "なし")
+
+    # **追加投資額計算式**
+    st.session_state["user_input"]["追加投資額計算式"] = st.text_area("追加投資額計算式", "なし")
+
 
     st.subheader("取得済みインプット")
-    st.text_input("インプットの名前", f"{st.session_state['user_input']['設備']}{{{st.session_state['user_input']['燃料']}}}のCO2排出量")
-    st.number_input("数字", value=200.0, min_value=0.0, step=1.0)
-    st.text_input("単位", "t-CO2")
+    st.session_state["user_input"]["取得済みインプットの名前"] = st.text_input("インプットの名前", f"{st.session_state['user_input'].get('設備', '')}{{{st.session_state['user_input'].get('燃料', '')}}}のCO2排出量")
+    st.session_state["user_input"]["取得済みインプットの数字"] = st.number_input("数字", value=200.0, min_value=0.0, step=1.0)
+    st.session_state["user_input"]["取得済みインプットの単位"] = st.text_input("単位", "t-CO2")
 
+    # **追加インプット 6個**
     for i in range(6):
         st.subheader(f"追加インプット {i+1}")
-        st.text_input(f"追加インプット{i+1}の名前", "対象設備の中で施策を実施する設備の割合" if i == 0 else "")
-        st.number_input(f"追加インプット{i+1}の数字", value=50.0 if i == 0 else None, min_value=0.0, step=1.0)
-        st.text_input(f"追加インプット{i+1}の単位", "%" if i == 0 else "")
+        name_key = f"追加インプット{i+1}の名前"
+        num_key = f"追加インプット{i+1}の数字"
+        unit_key = f"追加インプット{i+1}の単位"
+
+        st.session_state["user_input"][name_key] = st.text_input(name_key, "対象設備の中で施策を実施する設備の割合" if i == 0 else "")
+        st.session_state["user_input"][num_key] = st.number_input(num_key, value=50.0 if i == 0 else None, min_value=0.0, step=1.0)
+        st.session_state["user_input"][unit_key] = st.text_input(unit_key, "%" if i == 0 else "")
 
     # 規定値 3つを個別に配置
     predefined_values = [
         ("電気の排出係数", 0.000434, "t-CO2/kWh", "・環境省令和5年：0.000434(t-CO2/kWh)\nhttps://ghg-santeikohyo.env.go.jp/files/calc/r05_coefficient_rev4.pdf\n\n・環境省：0.000488(t-CO2/kWh)\n環境省のエクセル"),
         ("電気料金", 22.97, "円/kWh", "・新電力ネット(高圧)22.97(円/kWh)\nhttps://pps-net.org/unit\n\n・環境省：12.1587 (円/kWh)\n環境省のエクセル"),
-        ("想定稼働年数", 10.0, "年", "")
+        ("想定稼働年数", 10, "年", "")
     ]
 
-    for i, (name, value, unit, description) in enumerate(predefined_values):
-        st.subheader(f"{name}")
-        st.text_input(f"規定値 ({name} )の名前", value=name)
-        st.number_input(f"規定値 ({name}) の数字", min_value=0.0, step=(0.000001 if name == "電気の排出係数" else 0.01), format=("%.6f" if name == "電気の排出係数" else "%.2f"), value=value)
-        st.text_input(f"規定値 ({name})の単位", value=unit)
-        st.text_area(f"規定値 ({name}) の説明", value=description)
+    for name, value, unit, description in predefined_values:
+        st.subheader(f"規定値: {name}")
+        st.session_state["user_input"][f"規定値_{name}_名前"] = st.text_input(f"規定値 {name} の名前", value=name)
+        st.session_state["user_input"][f"規定値_{name}_数字"] = st.number_input(
+            f"規定値 {name} の数字",
+            min_value=0.0,
+            step=0.000001 if name == "電気の排出係数" else 0.01,
+            format="%.6f" if name == "電気の排出係数" else "%.2f",
+            value=float(value)
+        )
+        st.session_state["user_input"][f"規定値_{name}_単位"] = st.text_input(f"規定値 {name} の単位", value=unit)
+        st.session_state["user_input"][f"規定値_{name}_説明"] = st.text_area(f"規定値 {name} の説明", value=description)
 
-    # 追加の規定値13個
+    # **追加の規定値 13個**
     for i in range(13):
         st.subheader(f"規定値 {i+1}")
-        st.text_input(f"規定値 {i+1} の名前")
-        st.number_input(f"規定値 {i+1} の数字", min_value=0.0, step=0.01, format="%.2f",value=None)
-        st.text_input(f"規定値 {i+1} の単位")
-        st.text_area(f"規定値 {i+1} の説明")
+        st.session_state["user_input"][f"規定値{i+1}_名前"] = st.text_input(f"規定値 {i+1} の名前", value="")
+        st.session_state["user_input"][f"規定値{i+1}_数字"] = st.number_input(f"規定値 {i+1} の数字", min_value=0.0, step=0.01, format="%.2f", value=None)
+        st.session_state["user_input"][f"規定値{i+1}_単位"] = st.text_input(f"規定値 {i+1} の単位", value="")
+        st.session_state["user_input"][f"規定値{i+1}_説明"] = st.text_area(f"規定値 {i+1} の説明", value="")
 
+    # **推測値テンプレートの選択**
     prediction_template = st.selectbox("推測値のテンプレはどれを使用しますか？", ["1(容量推測)", "2(台数推測)", "3(自由入力)"])
     st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
 
@@ -200,16 +226,18 @@ elif st.session_state["page"] == "page3C":
 # ** サマリーページ **
 elif st.session_state["page"] == "summary":
     st.title("入力情報確認")
-    st.write(st.session_state["user_input"])
+    for key, value in st.session_state["user_input"].items():
+        st.write(f"{key}: {value if value is not None else ''}")
 
     # **Google Sheets にデータを送信**
     if st.button("データを送信"):
         try:
-            st.write("\u2705 Google Sheets にデータを追加中...")
-            user_data = list(st.session_state["user_input"].values())  # データをリスト化
+            st.write("✅ Google Sheets にデータを追加中...")
+            user_data = [st.session_state["user_input"].get(k, "") for k in st.session_state["user_input"]]  # データをリスト化
             sheet.append_row(user_data)  # スプレッドシートにデータを追加
-            st.success("\u2705 データをGoogle Sheetsに送信しました！")
+            st.success("✅ データをGoogle Sheetsに送信しました！")
         except Exception as e:
-            st.error(f"\u274C Google Sheets 書き込みエラー: {e}")
+            st.error(f"❌ Google Sheets 書き込みエラー: {e}")
+
 
 
