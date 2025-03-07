@@ -216,19 +216,33 @@ elif st.session_state["page"] == "page2A":
 
         for name, value, unit, description in predefined_values:
             st.subheader(f"規定値: {name}")
+            
             name_display = name if fuel == "電力" or name not in ["電気の排出係数", "電気料金"] else "燃料が電力ではありません"
             value_display = value if fuel == "電力" or name not in ["電気の排出係数", "電気料金"] else 0.0
-            
-            st.session_state["user_input"][f"規定値({name})の名前"]=st.text_input(f"規定値({name})の名前", value=name_display)
-            st.session_state["user_input"][f"規定値({name})の数字"]=st.number_input(
+
+            # セッションステートにデフォルト値をセット
+            st.session_state["user_input"].setdefault(f"規定値({name})の名前", name_display)
+            st.session_state["user_input"].setdefault(f"規定値({name})の数字", float(value_display))
+            st.session_state["user_input"].setdefault(f"規定値({name})の単位", unit if value is not None else "")
+            st.session_state["user_input"].setdefault(f"規定値({name})の説明", description if value is not None else "")
+
+            # ユーザー入力欄
+            st.session_state["user_input"][f"規定値({name})の名前"] = st.text_input(
+                f"規定値({name})の名前", value=st.session_state["user_input"][f"規定値({name})の名前"]
+            )
+            st.session_state["user_input"][f"規定値({name})の数字"] = st.number_input(
                 f"規定値({name})の数字",
                 min_value=0.0,
                 step=float(0.000001 if name == "電気の排出係数" else 0.01),
                 format="%.6f" if name == "電気の排出係数" else "%.2f",
-                value=float(value_display)
+                value=st.session_state["user_input"][f"規定値({name})の数字"]
             )
-            st.session_state["user_input"][f"規定値({name})の単位"]=st.text_input(f"規定値({name})の単位", value=unit if value is not None else "")
-            st.session_state["user_input"][f"規定値({name})の説明"]=st.text_area(f"規定値({name})の説明", value=description if value is not None else "")
+            st.session_state["user_input"][f"規定値({name})の単位"] = st.text_input(
+                f"規定値({name})の単位", value=st.session_state["user_input"][f"規定値({name})の単位"]
+            )
+            st.session_state["user_input"][f"規定値({name})の説明"] = st.text_area(
+                f"規定値({name})の説明", value=st.session_state["user_input"][f"規定値({name})の説明"]
+    )
 
         # **追加の規定値 13個**
         for i in range(13):
