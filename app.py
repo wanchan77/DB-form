@@ -186,10 +186,17 @@ elif st.session_state["page"] == "page2A":
     # **追加の規定値 13個**
     for i in range(13):
         st.subheader(f"規定値 {i+1}")
-        if i == 1:
-            fuel = st.session_state["user_input"]["燃料"]
+        fuel = st.session_state["user_input"].get("燃料", "")
+    
+        if i == 0:
+            name, unit = "省エネ率", "%"
+            value = None
+        elif i == 1:
             name, value, unit, description = emission_factors.get(fuel, ("", None, "", ""))
             value_format = "%.6f"
+        elif i == 2:
+            name, value, unit, description = fuel_prices.get(fuel, ("", None, "", ""))
+            value_format = "%.2f"
         else:
             name, value, unit, description = "", None, "", ""
             value_format = "%.2f"
