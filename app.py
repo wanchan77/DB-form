@@ -1475,6 +1475,7 @@ elif st.session_state["page"] == "page3A":
             st.subheader(f"推測規定値 {i+1}")
             fuel = st.session_state["user_input"].get("燃料", "")
             value_format = "%.2f"
+            description = ""  # description を初期化
         
             if i == 0:
                 name, unit = "稼働時間", "時間/日"
