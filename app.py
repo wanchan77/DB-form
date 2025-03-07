@@ -2054,6 +2054,7 @@ elif st.session_state["page"] == "summary":
     #     except Exception as e:
     #         st.error(f"❌ Google Sheets 書き込みエラー: {e}")
     # **Google Sheets にデータを送信**
+    # **Google Sheets にデータを送信**
     if st.button("データを送信"):
         try:
             st.write("✅ Google Sheets にデータを追加中...")
@@ -2068,15 +2069,17 @@ elif st.session_state["page"] == "summary":
             if not any(user_data):
                 st.error("❌ 送信データが空のため、Google Sheets に追加できません。")
             else:
-                response = sheet.append_row(user_data)  # スプレッドシートにデータを追加
+                # **スプレッドシートの最終行を取得して、次の行を決定**
+                last_row = len(sheet.get_all_values())  # すべてのデータを取得し、最後の行番号を取得
 
-                # 書き込み結果を表示
-                st.write("Google Sheets のレスポンス:", response)
+                # **データを A 列から開始する**
+                sheet.insert_row(user_data, index=last_row + 1)
 
                 st.success("✅ データをGoogle Sheetsに送信しました！")
 
         except Exception as e:
             st.error(f"❌ Google Sheets 書き込みエラー: {e}")
+
 
 
 
