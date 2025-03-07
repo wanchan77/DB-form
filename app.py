@@ -74,7 +74,7 @@ if st.session_state["page"] == "page1":
     neworold_scope_fuel = st.selectbox("燃料転換前or燃料転換後はどの燃料ですか？(今回入力していない方の施策について)", neworold_scope_fuel_options)
     st.session_state["user_input"]["neworold_scope_燃料"] = neworold_scope_fuel
 
-    measure_type = st.selectbox("施策の種類はどれですか？(自由入力の場合のみ入力)", ["1(運用改善系)", "2(設備投資系)", "3(燃料転換系_1)", "4(燃料転換系_2)", "5(緑施策)"])
+    measure_type = st.selectbox("施策の種類はどれですか？(自由入力の場合のみ入力)", ["","1(運用改善系)", "2(設備投資系)", "3(燃料転換系_1)", "4(燃料転換系_2)", "5(緑施策)"])
     st.session_state["user_input"]["施策の種類"] = measure_type
 
     measures = st.text_input("施策名はなんですか？")
