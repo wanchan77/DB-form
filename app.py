@@ -1717,10 +1717,10 @@ elif st.session_state["page"] == "page3C":
         fuel_price_str = ""
         fuel_heat_str = ""
         
-        default_suppose_formula = ""
+        default_suppose_formula = "推測値="
         
         st.session_state["user_input"].setdefault("推測式", default_suppose_formula)
-        st.session_state["user_input"]["推測式"] = st.text_area("推測式", "推測値=",value=st.session_state["user_input"]["推測式"])
+        st.session_state["user_input"]["推測式"] = st.text_area("推測式",value=st.session_state["user_input"]["推測式"])
         
         for i in range(4):
             st.subheader(f"推測規定値 {i+1}")
