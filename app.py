@@ -2044,13 +2044,37 @@ elif st.session_state["page"] == "summary":
     for key, value in st.session_state["user_input"].items():
         st.write(f"{key}: {value if value is not None else ''}")
 
+    # # **Google Sheets にデータを送信**
+    # if st.button("データを送信"):
+    #     try:
+    #         st.write("✅ Google Sheets にデータを追加中...")
+    #         user_data = [st.session_state["user_input"].get(k, "") for k in st.session_state["user_input"]]  # データをリスト化
+    #         sheet.append_row(user_data)  # スプレッドシートにデータを追加
+    #         st.success("✅ データをGoogle Sheetsに送信しました！")
+    #     except Exception as e:
+    #         st.error(f"❌ Google Sheets 書き込みエラー: {e}")
     # **Google Sheets にデータを送信**
     if st.button("データを送信"):
         try:
             st.write("✅ Google Sheets にデータを追加中...")
-            user_data = [st.session_state["user_input"].get(k, "") for k in st.session_state["user_input"]]  # データをリスト化
-            sheet.append_row(user_data)  # スプレッドシートにデータを追加
-            st.success("✅ データをGoogle Sheetsに送信しました！")
+
+            # データを取得
+            user_data = [st.session_state["user_input"].get(k, "") for k in st.session_state["user_input"]]
+
+            # データの中身を確認
+            st.write("送信データ:", user_data)
+
+            # データが空でないことを確認
+            if not any(user_data):
+                st.error("❌ 送信データが空のため、Google Sheets に追加できません。")
+            else:
+                response = sheet.append_row(user_data)  # スプレッドシートにデータを追加
+
+                # 書き込み結果を表示
+                st.write("Google Sheets のレスポンス:", response)
+
+                st.success("✅ データをGoogle Sheetsに送信しました！")
+
         except Exception as e:
             st.error(f"❌ Google Sheets 書き込みエラー: {e}")
 
