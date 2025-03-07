@@ -1657,7 +1657,7 @@ elif st.session_state["page"] == "page3B":
                 value = load_factor_table.get(equipment, 0.0)  # デフォルト値を0.0に設定
             else:
                 equipment = st.session_state["user_input"].get("設備", "")
-                name, unit, value = f"{equipment}平均容量", "kW", None
+                name, unit, value = f"{equipment}平均容量", "kW", 0.0
             
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_名前", name)
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_数字", value)
