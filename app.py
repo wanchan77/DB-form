@@ -35,7 +35,6 @@ def next_page(next_page_name):
     st.session_state["page"] = next_page_name
 
 # 設備と燃料の選択肢
-...
 
 # ** 1ページ目 **
 if st.session_state["page"] == "page1":
@@ -140,13 +139,34 @@ elif st.session_state["page"] == "page2A":
         st.session_state["user_input"][f"規定値_{name}_単位"] = st.text_input(f"規定値 {name} の単位", value=unit)
         st.session_state["user_input"][f"規定値_{name}_説明"] = st.text_area(f"規定値 {name} の説明", value=description)
 
+     # 燃料ごとの排出係数データ
+    emission_factors = {
+        "都市ガス": ("都市ガスの排出係数", 0.00223, "t-CO2/㎥", "https://www.env.go.jp/nature/info/onsen_ondanka/h23-2/ref02.pdf"),
+        "LPG": ("LPGの排出係数", 0.0066, "t-CO2/㎥", "https://www.env.go.jp/nature/info/onsen_ondanka/h23-2/ref02.pdf"),
+        "灯油": ("灯油の排出係数", 0.00249, "t-CO2/l", "https://www.env.go.jp/nature/info/onsen_ondanka/h23-2/ref02.pdf"),
+        "A重油": ("A重油の排出係数", 0.00271, "t-CO2/l", "https://ghg-santeikohyo.env.go.jp/files/manual/chpt2_4-9_rev.pdf"),
+        "B・C重油": ("B・C重油の排出係数", 0.003, "t-CO2/l", "https://ghg-santeikohyo.env.go.jp/files/manual/chpt2_4-9_rev.pdf"),
+        "LNG": ("LNGの排出係数", 2.7, "t-CO2/t", "https://shift.env.go.jp/files/offering/2023/sf05f2.pdf"),
+        "温水": ("温水の排出係数", 0.0532, "t-CO2/GJ", "https://ghg-santeikohyo.env.go.jp/files/calc/r06_heat_coefficient_rev3.pdf"),
+        "冷水": ("冷水の排出係数", 0.0532, "t-CO2/GJ", "https://ghg-santeikohyo.env.go.jp/files/calc/r06_heat_coefficient_rev3.pdf"),
+        "石炭": ("石炭の排出係数", 2.33, "t-CO2/t", "https://ghg-santeikohyo.env.go.jp/files/manual/chpt2_4-9_rev.pdf"),
+        "軽油": ("軽油の排出係数", 0.00258, "t-CO2/l", "https://www.env.go.jp/content/900443021.pdf"),
+        "揮発油": ("揮発油の排出係数", 0.00232, "t-CO2/l", "https://www.env.go.jp/content/900443021.pdf"),
+    }
+
     # **追加の規定値 13個**
     for i in range(13):
         st.subheader(f"規定値 {i+1}")
-        st.session_state["user_input"][f"規定値{i+1}_名前"] = st.text_input(f"規定値 {i+1} の名前", value="")
-        st.session_state["user_input"][f"規定値{i+1}_数字"] = st.number_input(f"規定値 {i+1} の数字", min_value=0.0, step=0.01, format="%.2f", value=None)
-        st.session_state["user_input"][f"規定値{i+1}_単位"] = st.text_input(f"規定値 {i+1} の単位", value="")
-        st.session_state["user_input"][f"規定値{i+1}_説明"] = st.text_area(f"規定値 {i+1} の説明", value="")
+        if i == 2:
+            fuel = st.session_state["user_input"]["燃料"]
+            name, value, unit, description = emission_factors.get(fuel, ("", 0, "", ""))
+        else:
+            name, value, unit, description = "", None, "", ""
+        
+        st.session_state["user_input"][f"規定値{i+1}_名前"] = st.text_input(f"規定値 {i+1} の名前", value=name)
+        st.session_state["user_input"][f"規定値{i+1}_数字"] = st.number_input(f"規定値 {i+1} の数字", min_value=0.0, step=0.01, format="%.2f", value=value)
+        st.session_state["user_input"][f"規定値{i+1}_単位"] = st.text_input(f"規定値 {i+1} の単位", value=unit)
+        st.session_state["user_input"][f"規定値{i+1}_説明"] = st.text_area(f"規定値 {i+1} の説明", value=description)
 
     # **推測値テンプレートの選択**
     prediction_template = st.selectbox("推測値のテンプレはどれを使用しますか？", ["1(容量推測)", "2(台数推測)", "3(自由入力)"])
