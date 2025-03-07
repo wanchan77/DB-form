@@ -159,7 +159,7 @@ elif st.session_state["page"] == "page2A":
         unit_key = f"追加インプット{i+1}の単位"
 
         st.session_state["user_input"][name_key] = st.text_input(name_key, "対象設備の中で施策を実施する設備の割合" if i == 0 else "")
-        st.session_state["user_input"][num_key] = st.number_input(num_key, value=50.0 if i == 0 else 0.0, min_value=0.0, step=1.0)
+        st.session_state["user_input"][num_key] = st.number_input(num_key, value=50.0 if i == 0 else None, min_value=0.0, step=1.0)
         st.session_state["user_input"][unit_key] = st.text_input(unit_key, "%" if i == 0 else "")
 
     # 燃料取得
