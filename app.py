@@ -238,6 +238,9 @@ elif st.session_state["page"] == "page2A":
         else:
             next_page("page3C")
 
+    if st.button("戻る"):
+        next_page("page1")
+
     # if st.button("完了"):
     #     next_page("summary")
 
@@ -247,32 +250,72 @@ elif st.session_state["page"] == "page2B":
     input_value = st.text_area("設備投資の詳細を入力してください")
     st.session_state["user_input"]["設備投資詳細"] = input_value
 
-    if st.button("完了"):
-        next_page("summary")
+    # **推測値テンプレートの選択**
+    prediction_template = st.selectbox("推測値のテンプレはどれを使用しますか？", ["1(容量推測)", "2(台数推測)", "3(自由入力)"])
+    st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
+
+    if st.button("次へ"):
+        if prediction_template.startswith("1"):
+            next_page("page3A")
+        elif prediction_template.startswith("2"):
+            next_page("page3B")
+        else:
+            next_page("page3C")
+
 
 elif st.session_state["page"] == "page2C":
     st.title("フォーム入力 - Step 2C (燃料転換系_1)")
     input_value = st.text_area("燃料転換（第一種）の詳細を入力してください")
     st.session_state["user_input"]["燃料転換1詳細"] = input_value
 
-    if st.button("完了"):
-        next_page("summary")
+    # **推測値テンプレートの選択**
+    prediction_template = st.selectbox("推測値のテンプレはどれを使用しますか？", ["1(容量推測)", "2(台数推測)", "3(自由入力)"])
+    st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
+
+    if st.button("次へ"):
+        if prediction_template.startswith("1"):
+            next_page("page3A")
+        elif prediction_template.startswith("2"):
+            next_page("page3B")
+        else:
+            next_page("page3C")
+
 
 elif st.session_state["page"] == "page2D":
     st.title("フォーム入力 - Step 2D (燃料転換系_2)")
     input_value = st.text_area("燃料転換（第二種）の詳細を入力してください")
     st.session_state["user_input"]["燃料転換2詳細"] = input_value
 
-    if st.button("完了"):
-        next_page("summary")
+    # **推測値テンプレートの選択**
+    prediction_template = st.selectbox("推測値のテンプレはどれを使用しますか？", ["1(容量推測)", "2(台数推測)", "3(自由入力)"])
+    st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
+
+    if st.button("次へ"):
+        if prediction_template.startswith("1"):
+            next_page("page3A")
+        elif prediction_template.startswith("2"):
+            next_page("page3B")
+        else:
+            next_page("page3C")
+
 
 elif st.session_state["page"] == "page2E":
     st.title("フォーム入力 - Step 2E (自由入力)")
     input_value = st.text_area("自由入力の詳細を記入してください")
     st.session_state["user_input"]["自由入力詳細"] = input_value
 
-    if st.button("完了"):
-        next_page("summary")
+    # **推測値テンプレートの選択**
+    prediction_template = st.selectbox("推測値のテンプレはどれを使用しますか？", ["1(容量推測)", "2(台数推測)", "3(自由入力)"])
+    st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
+
+    if st.button("次へ"):
+        if prediction_template.startswith("1"):
+            next_page("page3A")
+        elif prediction_template.startswith("2"):
+            next_page("page3B")
+        else:
+            next_page("page3C")
+
 
 # ** 2ページ目F (緑施策) **
 elif st.session_state["page"] == "page2F":
@@ -280,8 +323,18 @@ elif st.session_state["page"] == "page2F":
     input_value = st.text_area("緑施策の詳細を入力してください")
     st.session_state["user_input"]["緑施策詳細"] = input_value
 
-    if st.button("完了"):
-        next_page("summary")
+    # **推測値テンプレートの選択**
+    prediction_template = st.selectbox("推測値のテンプレはどれを使用しますか？", ["1(容量推測)", "2(台数推測)", "3(自由入力)"])
+    st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
+
+    if st.button("次へ"):
+        if prediction_template.startswith("1"):
+            next_page("page3A")
+        elif prediction_template.startswith("2"):
+            next_page("page3B")
+        else:
+            next_page("page3C")
+
 
 elif st.session_state["page"] == "page3A":
     st.title("容量推測入力")
