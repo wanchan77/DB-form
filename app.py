@@ -1500,7 +1500,7 @@ elif st.session_state["page"] == "page3A":
                 equipment = st.session_state["user_input"].get("設備", "")
                 value = float(load_factor_table.get(equipment, 0.0)) # デフォルト値を0.0に設定
             else:
-                name, unit, value = "", "", None  # 初期値を1.0に設定
+                name, unit, value = "", "", 0.0  # 初期値を1.0に設定
             
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_名前", name)
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_数字", value)
@@ -1689,7 +1689,7 @@ elif st.session_state["page"] == "page3B":
             )
         
         submitted = st.form_submit_button("入力を確定")
-
+    
     if submitted:
         next_page("summary")
     if "previous_page" in st.session_state:
