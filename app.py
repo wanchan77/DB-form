@@ -171,19 +171,33 @@ elif st.session_state["page"] == "page2A":
 
     for name, value, unit, description in predefined_values:
         st.subheader(f"規定値: {name}")
-        st.session_state["user_input"][f"規定値_{name}_名前"] = st.text_input(f"規定値({name})の名前", value=name)
-        # 値が None の場合、デフォルトで 0.0 にする
-        numeric_value = value if value is not None else 0.0
+        
+        if fuel != "電力" and name in ["電気の排出係数", "電気料金"]:
+            name_display = "燃料が電力ではありません"
+        else:
+            name_display = name
+        
+        st.session_state["user_input"][f"規定値_{name}_名前"] = st.text_input(f"規定値({name})の名前", value=name_display)
+        
+        # 数値が None の場合はデフォルトで 0.0 にせず、空欄にする
+        if value is None:
+            numeric_value = 0.0
+            disabled = True
+        else:
+            numeric_value = value
+            disabled = False
         
         st.session_state["user_input"][f"規定値_{name}_数字"] = st.number_input(
             f"規定値({name})の数字",
             min_value=0.0,
             step=0.000001 if name == "電気の排出係数" else 0.01,
             format="%.6f" if name == "電気の排出係数" else "%.2f",
-            value=numeric_value
+            value=numeric_value,
+            disabled=disabled
         )
-        st.session_state["user_input"][f"規定値_{name}_単位"] = st.text_input(f"規定値({name})の単位", value=unit if value is not None else "")
-        st.session_state["user_input"][f"規定値_{name}_説明"] = st.text_area(f"規定値({name})の説明", value=description if value is not None else "")
+        
+        st.session_state["user_input"][f"規定値_{name}_単位"] = st.text_input(f"規定値({name})の単位", value=unit if value is not None else "", disabled=disabled)
+        st.session_state["user_input"][f"規定値_{name}_説明"] = st.text_area(f"規定値({name})の説明", value=description if value is not None else "", disabled=disabled)
 
 
     # **追加の規定値 13個**
