@@ -1456,10 +1456,13 @@ elif st.session_state["page"] == "page3A":
     with st.form("input_form"):
         select = st.selectbox("推測値はどの因数ですか？", ["additional_input_2", "additional_input_1", "additional_input_3", "additional_input_4", "additional_input_5", "additional_input_6"])
         st.session_state["user_input"]["推測対象"] = select
+        
         under = st.selectbox("小数点以下何桁まで推測しますか？", ["0", "1"])
         st.session_state["user_input"]["小数点以下の桁数"] = int(under)
+        
         st.text_area("容量推測の詳細を入力してください")
-         # **推測式**
+        
+        # **推測式**
         fuel = st.session_state["user_input"].get("燃料", "")
         if fuel == "電力":
             emission_factor_str = "電気の排出係数<t-CO2/kWh>"
@@ -1475,56 +1478,47 @@ elif st.session_state["page"] == "page3A":
             emission_factor_str = f"{fuel}の排出係数<{emission_unit}>"
             fuel_price_str = f"{price_name}<{price_unit}>"
             fuel_heat_str = f"{heat_name}<{heat_unit}>"
+        
         if fuel == "電力":
             default_suppose_formula = f"推測値={st.session_state['user_input'].get('設備', '')}{{{fuel}}}のCO2排出量<t-CO2/年>÷{emission_factor_str}÷稼働時間<時間/日>÷稼働日数<日/年>÷負荷率<%>"
         else:
             default_suppose_formula = f"推測値={st.session_state['user_input'].get('設備', '')}{{{fuel}}}のCO2排出量<t-CO2/年>÷{emission_factor_str}×{fuel_heat_str}÷3.6÷稼働時間<時間/日>÷稼働日数<日/年>÷負荷率<%>"
+        
         st.session_state["user_input"].setdefault("推測式", default_suppose_formula)
-        st.session_state["user_input"]["推測式"] = st.text_area(
-            "推測式",
-            value=st.session_state["user_input"]["推測式"]
-        )
+        st.session_state["user_input"]["推測式"] = st.text_area("推測式", value=st.session_state["user_input"]["推測式"])
+        
         # **推測式用の規定値 4個**
         for i in range(4):
             st.subheader(f"推測規定値 {i+1}")
-            fuel = st.session_state["user_input"].get("燃料", "")
             value_format = "%.2f"
-            description = ""  # description を初期化
-        
+            description = ""
+
             if i == 0:
-                name, unit = "稼働時間", "時間/日"
-                value = 8.0
+                name, unit, value = "稼働時間", "時間/日", 8.0
             elif i == 1:
-                name, unit = "稼働日数", "日/年"
-                value = 200.0
+                name, unit, value = "稼働日数", "日/年", 200.0
             elif i == 2:
                 name, unit = "負荷率", "%"
                 equipment = st.session_state["user_input"].get("設備", "")
-                value = load_factor_table.get(equipment, "負荷率表対応外、検索してください")  # 負荷率を取得（該当なしの場合、メッセージ表示）
+                value = load_factor_table.get(equipment, "負荷率表対応外、検索してください")
             else:
                 name, unit, value = "", "", None
             
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_名前", name)
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_数字", value)
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_単位", unit)
-            st.session_state["user_input"].setdefault(f"推測規定値{i+1}_説明", description)
             
-            st.session_state["user_input"][f"推測規定値{i+1}_名前"] = st.text_input(f"推測規定値 {i+1} の名前", value=st.session_state["user_input"][f"推測規定値{i+1}_名前"])
-            # 負荷率が数値でない場合（該当なしのメッセージ）を処理
+            st.text_input(f"推測規定値 {i+1} の名前", value=st.session_state["user_input"][f"推測規定値{i+1}_名前"], key=f"推測規定値{i+1}_名前")
+            
             if isinstance(value, str):
                 st.write(value)
             else:
-                st.session_state["user_input"][f"推測規定値{i+1}_数字"] = st.number_input(
-                    f"推測規定値 {i+1} の数字",
-                    min_value=0.0,
-                    step=0.01,
-                    format=value_format,
-                    value=st.session_state["user_input"][f"推測規定値{i+1}_数字"]
-                )
-            st.session_state["user_input"][f"推測規定値{i+1}_単位"] = st.text_input(f"推測規定値 {i+1} の単位", value=st.session_state["user_input"][f"推測規定値{i+1}_単位"])
-            st.session_state["user_input"][f"推測規定値{i+1}_説明"] = st.text_area(f"推測規定値 {i+1} の説明", value=st.session_state["user_input"][f"推測規定値{i+1}_説明"])
+                st.number_input(f"推測規定値 {i+1} の数字", min_value=0.0, step=0.01, format=value_format, value=st.session_state["user_input"][f"推測規定値{i+1}_数字"], key=f"推測規定値{i+1}_数字")
+            
+            st.text_input(f"推測規定値 {i+1} の単位", value=st.session_state["user_input"][f"推測規定値{i+1}_単位"], key=f"推測規定値{i+1}_単位")
 
-            submitted = st.form_submit_button("入力を確定")
+        submitted = st.form_submit_button("入力を確定")
+
 
     if submitted:
         next_page("summary")
