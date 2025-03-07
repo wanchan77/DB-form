@@ -995,7 +995,7 @@ elif st.session_state["page"] == "page2D":
         )
 
         st.subheader("取得済みインプット")
-        default_input_name = f"{st.session_state['user_input'].get('設備', '')}{{{fuel}}}のCO2排出量"
+        default_input_name = f"{neworold_scope_equipment}{{{neworold_fuel}}}のCO2排出量"
         st.session_state["user_input"].setdefault("取得済みインプットの名前", default_input_name)
         st.session_state["user_input"]["取得済みインプットの名前"] = st.text_input(
             "インプットの名前",
