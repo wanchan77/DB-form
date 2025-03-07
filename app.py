@@ -159,7 +159,7 @@ elif st.session_state["page"] == "page2A":
         unit_key = f"追加インプット{i+1}の単位"
 
         st.session_state["user_input"][name_key] = st.text_input(name_key, "対象設備の中で施策を実施する設備の割合" if i == 0 else "")
-        st.session_state["user_input"][num_key] = st.number_input(num_key, value=50.0 if i == 0 else None, min_value=0.0, step=1.0)
+        st.session_state["user_input"][num_key] = st.number_input(num_key, value=50.0 if i == 0 else 0.0, min_value=0.0, step=1.0)
         st.session_state["user_input"][unit_key] = st.text_input(unit_key, "%" if i == 0 else "")
 
     # 燃料取得
@@ -231,6 +231,7 @@ elif st.session_state["page"] == "page2A":
     st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
 
     if st.button("次へ"):
+        st.session_state["previous_page"] = st.session_state["page"]  # 現在のページを保存
         if prediction_template.startswith("1"):
             next_page("page3A")
         elif prediction_template.startswith("2"):
@@ -255,12 +256,16 @@ elif st.session_state["page"] == "page2B":
     st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
 
     if st.button("次へ"):
+        st.session_state["previous_page"] = st.session_state["page"]  # 現在のページを保存
         if prediction_template.startswith("1"):
             next_page("page3A")
         elif prediction_template.startswith("2"):
             next_page("page3B")
         else:
             next_page("page3C")
+
+    if st.button("戻る"):
+        next_page("page1")
 
 
 elif st.session_state["page"] == "page2C":
@@ -273,12 +278,16 @@ elif st.session_state["page"] == "page2C":
     st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
 
     if st.button("次へ"):
+        st.session_state["previous_page"] = st.session_state["page"]  # 現在のページを保存
         if prediction_template.startswith("1"):
             next_page("page3A")
         elif prediction_template.startswith("2"):
             next_page("page3B")
         else:
             next_page("page3C")
+
+    if st.button("戻る"):
+        next_page("page1")
 
 
 elif st.session_state["page"] == "page2D":
@@ -291,12 +300,16 @@ elif st.session_state["page"] == "page2D":
     st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
 
     if st.button("次へ"):
+        st.session_state["previous_page"] = st.session_state["page"]  # 現在のページを保存
         if prediction_template.startswith("1"):
             next_page("page3A")
         elif prediction_template.startswith("2"):
             next_page("page3B")
         else:
             next_page("page3C")
+
+    if st.button("戻る"):
+        next_page("page1")
 
 
 elif st.session_state["page"] == "page2E":
@@ -309,12 +322,16 @@ elif st.session_state["page"] == "page2E":
     st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
 
     if st.button("次へ"):
+        st.session_state["previous_page"] = st.session_state["page"]  # 現在のページを保存
         if prediction_template.startswith("1"):
             next_page("page3A")
         elif prediction_template.startswith("2"):
             next_page("page3B")
         else:
             next_page("page3C")
+
+    if st.button("戻る"):
+        next_page("page1")
 
 
 # ** 2ページ目F (緑施策) **
@@ -328,12 +345,16 @@ elif st.session_state["page"] == "page2F":
     st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
 
     if st.button("次へ"):
+        st.session_state["previous_page"] = st.session_state["page"]  # 現在のページを保存
         if prediction_template.startswith("1"):
             next_page("page3A")
         elif prediction_template.startswith("2"):
             next_page("page3B")
         else:
             next_page("page3C")
+    
+    if st.button("戻る"):
+        next_page("page1")
 
 
 elif st.session_state["page"] == "page3A":
@@ -341,18 +362,27 @@ elif st.session_state["page"] == "page3A":
     st.text_area("容量推測の詳細を入力してください")
     if st.button("次へ"):
         next_page("summary")
+    if "previous_page" in st.session_state:
+        if st.button("戻る"):
+            next_page(st.session_state["previous_page"])
 
 elif st.session_state["page"] == "page3B":
     st.title("台数推測入力")
     st.text_area("台数推測の詳細を入力してください")
     if st.button("次へ"):
         next_page("summary")
+    if "previous_page" in st.session_state:
+        if st.button("戻る"):
+            next_page(st.session_state["previous_page"])
 
 elif st.session_state["page"] == "page3C":
     st.title("自由入力")
     st.text_area("自由入力の詳細を入力してください")
     if st.button("次へ"):
         next_page("summary")
+    if "previous_page" in st.session_state:
+        if st.button("戻る"):
+            next_page(st.session_state["previous_page"])
 
 # ** サマリーページ **
 elif st.session_state["page"] == "summary":
