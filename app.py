@@ -1479,10 +1479,10 @@ elif st.session_state["page"] == "page3A":
         
             if i == 0:
                 name, unit = "稼働時間", "時間/日"
-                value = None
+                value = 8.0
             elif i == 1:
                 name, unit = "稼働日数", "日/年"
-                value = None
+                value = 200.0
             elif i == 2:
                 name, unit = "負荷率", "%"
                 value = None
