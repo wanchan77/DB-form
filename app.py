@@ -159,7 +159,7 @@ elif st.session_state["page"] == "page2A":
         unit_key = f"追加インプット{i+1}の単位"
 
         st.session_state["user_input"][name_key] = st.text_input(name_key, "対象設備の中で施策を実施する設備の割合" if i == 0 else "")
-        st.session_state["user_input"][num_key] = st.number_input(num_key, value=50.0 if i == 0 else None, min_value=0.0, step=1.0)
+        st.session_state["user_input"][num_key] = st.number_input(num_key, value=50.0 if i == 0 else 0.0, min_value=0.0, step=1.0)
         st.session_state["user_input"][unit_key] = st.text_input(unit_key, "%" if i == 0 else "")
 
     # 燃料取得
@@ -183,7 +183,22 @@ elif st.session_state["page"] == "page2A":
         
         st.session_state["user_input"][f"規定値_{name}_名前"] = st.text_input(f"規定値({name})の名前", value=name_display)
         
-        st.session_state["user_input"][f"規定値_{name}_数字"] = st.text_input(f"規定値({name})の数字", value="" if value is None else str(value))
+        if value is not None:
+            st.session_state["user_input"][f"規定値_{name}_数字"] = st.number_input(
+                f"規定値({name})の数字",
+                min_value=0.0,
+                step=0.000001 if name == "電気の排出係数" else 0.01,
+                format="%.6f" if name == "電気の排出係数" else "%.2f",
+                value=value
+            )
+        else:
+            st.session_state["user_input"][f"規定値_{name}_数字"] = st.number_input(
+                f"規定値({name})の数字",
+                min_value=0.0,
+                step=0.000001 if name == "電気の排出係数" else 0.01,
+                format="%.6f" if name == "電気の排出係数" else "%.2f",
+                value=0.0
+            )
         
         st.session_state["user_input"][f"規定値_{name}_単位"] = st.text_input(f"規定値({name})の単位", value=unit if value is not None else "")
         st.session_state["user_input"][f"規定値_{name}_説明"] = st.text_area(f"規定値({name})の説明", value=description if value is not None else "")
