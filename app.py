@@ -1698,7 +1698,71 @@ elif st.session_state["page"] == "page3B":
 
 elif st.session_state["page"] == "page3C":
     st.title("自由入力")
-    st.text_area("自由入力の詳細を入力してください")
+    st.write(f"現在入力中の施策：{st.session_state['user_input']['設備']} {st.session_state['user_input']['施策名']} {st.session_state['user_input']['燃料']}")
+    with st.form("input_form"):
+        select = st.selectbox("推測値はどの因数ですか？", ["additional_input_2", "additional_input_1", "additional_input_3", "additional_input_4", "additional_input_5", "additional_input_6"])
+        st.session_state["user_input"]["推測対象"] = select
+        
+        under = st.selectbox("小数点以下何桁まで推測しますか？", ["0", "1"])
+        st.session_state["user_input"]["小数点以下の桁数"] = float(under)
+        
+        fuel = st.session_state["user_input"].get("燃料", "")
+        
+        emission_factors = {}
+        fuel_prices = {}
+        fuel_heat = {}
+        load_factor_table = {}
+        
+        emission_factor_str = ""
+        fuel_price_str = ""
+        fuel_heat_str = ""
+        
+        default_suppose_formula = ""
+        
+        st.session_state["user_input"].setdefault("推測式", default_suppose_formula)
+        st.session_state["user_input"]["推測式"] = st.text_area("推測式", value=st.session_state["user_input"]["推測式"])
+        
+        for i in range(4):
+            st.subheader(f"推測規定値 {i+1}")
+            value_format = "%.2f"
+            description = ""
+
+            name, unit, value = "", "", 0.0  
+            
+            st.session_state["user_input"].setdefault(f"推測規定値{i+1}_名前", name)
+            st.session_state["user_input"].setdefault(f"推測規定値{i+1}_数字", value)
+            st.session_state["user_input"].setdefault(f"推測規定値{i+1}_単位", unit)
+            st.session_state["user_input"].setdefault(f"推測規定値{i+1}_説明", description)
+            
+            st.text_input(
+                f"推測規定値 {i+1} の名前",
+                value=st.session_state["user_input"].get(f"推測規定値{i+1}_名前", ""),
+                key=f"推測規定値{i+1}_名前"
+            )
+            
+            st.number_input(
+                f"推測規定値 {i+1} の数字",
+                min_value=0.0,
+                step=0.01,
+                format=value_format,
+                value=st.session_state["user_input"].get(f"推測規定値{i+1}_数字", 0.0),
+                key=f"推測規定値{i+1}_数字"
+            )
+            
+            st.text_input(
+                f"推測規定値 {i+1} の単位",
+                value=st.session_state["user_input"].get(f"推測規定値{i+1}_単位", ""),
+                key=f"推測規定値{i+1}_単位"
+            )
+            
+            st.text_area(
+                f"推測規定値 {i+1} の説明",
+                value=st.session_state["user_input"].get(f"推測規定値{i+1}_説明", ""),
+                key=f"推測規定値{i+1}_説明"
+            )
+        
+        submitted = st.form_submit_button("入力を確定")
+
     if st.button("次へ"):
         next_page("summary")
     if "previous_page" in st.session_state:
