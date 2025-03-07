@@ -808,10 +808,10 @@ elif st.session_state["page"] == "page2C":
                 name, value, unit, description = fuel_heat.get(fuel, ("", None, "", ""))
                 value_format = "%.2f"
             elif i == 6:
-                name, value, unit = f"{equipment}効率", "%"
+                name, unit = f"旧{equipment}効率", "%"
                 value = 0.0
             elif i == 7:
-                name, value, unit = f"{neworold_scope_equipment}効率", "%"
+                name, unit = f"新{neworold_scope_equipment}効率", "%"
                 value = 0.0
             elif i == 8:
                 name, value, unit, description = emission_factors.get(neworold_scope_fuel, ("", None, "", ""))
