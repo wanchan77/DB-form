@@ -216,20 +216,37 @@ elif st.session_state["page"] == "page2A":
 
         for name, value, unit, description in predefined_values:
             st.subheader(f"規定値: {name}")
-            name_display = name if fuel == "電力" or name not in ["電気の排出係数", "電気料金"] else "燃料が電力ではありません"
-            value_display = value if fuel == "電力" or name not in ["電気の排出係数", "電気料金"] else 0.0
-            
-            st.session_state["user_input"][f"規定値({name})の名前"]=st.text_input(f"規定値({name})の名前", value=name_display)
-            st.session_state["user_input"][f"規定値({name})の数字"]=st.number_input(
-                f"規定値({name})の数字",
-                min_value=0.0,
-                step=float(0.000001 if name == "電気の排出係数" else 0.01),
-                format="%.6f" if name == "電気の排出係数" else "%.2f",
-                value=float(value_display)
-            )
-            st.session_state["user_input"][f"規定値({name})の単位"]=st.text_input(f"規定値({name})の単位", value=unit if value is not None else "")
-            st.session_state["user_input"][f"規定値({name})の説明"]=st.text_area(f"規定値({name})の説明", value=description if value is not None else "")
+            name_key = f"規定値({name})の名前"
+        num_key = f"規定値({name})の数字"
+        unit_key = f"規定値({name})の単位"
+        desc_key = f"規定値({name})の説明"
 
+        # 初期値をセッションステートに設定 (setdefault を使用)
+        st.session_state["user_input"].setdefault(name_key, name)
+        st.session_state["user_input"].setdefault(num_key, value)
+        st.session_state["user_input"].setdefault(unit_key, unit)
+        st.session_state["user_input"].setdefault(desc_key, description)
+
+        # ユーザー入力
+        st.session_state["user_input"][name_key] = st.text_input(
+            f"規定値({name})の名前",
+            value=st.session_state["user_input"][name_key]
+        )
+        st.session_state["user_input"][num_key] = st.number_input(
+            f"規定値({name})の数字",
+            min_value=0.0,
+            step=0.000001 if name == "電気の排出係数" else 1.0 if name == "想定稼働年数" else 0.01,
+            format="%.6f" if name == "電気の排出係数" else "%.0f" if name == "想定稼働年数" else "%.2f",
+            value=st.session_state["user_input"][num_key]
+        )
+        st.session_state["user_input"][unit_key] = st.text_input(
+            f"規定値({name})の単位",
+            value=st.session_state["user_input"][unit_key]
+        )
+        st.session_state["user_input"][desc_key] = st.text_area(
+            f"規定値({name})の説明",
+            value=st.session_state["user_input"][desc_key]
+        )
         # **追加の規定値 13個**
         for i in range(13):
             st.subheader(f"規定値 {i+1}")
