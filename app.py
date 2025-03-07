@@ -1498,9 +1498,9 @@ elif st.session_state["page"] == "page3A":
             elif i == 2:
                 name, unit = "負荷率", "%"
                 equipment = st.session_state["user_input"].get("設備", "")
-                value = load_factor_table.get(equipment, "負荷率表対応外、検索してください")
+                value = float(load_factor_table.get(equipment, 0.0)) # デフォルト値を0.0に設定
             else:
-                name, unit, value = "", "", None
+                name, unit, value = "", "", None  # 初期値を1.0に設定
             
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_名前", name)
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_数字", value)
@@ -1508,22 +1508,19 @@ elif st.session_state["page"] == "page3A":
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_説明", description)
             
             st.text_input(
-            f"推測規定値 {i+1} の名前",
-            value=st.session_state["user_input"].get(f"推測規定値{i+1}_名前", ""),
-            key=f"推測規定値{i+1}_名前"
+                f"推測規定値 {i+1} の名前",
+                value=st.session_state["user_input"].get(f"推測規定値{i+1}_名前", ""),
+                key=f"推測規定値{i+1}_名前"
             )
             
-            if isinstance(value, str):
-                st.write(value)
-            else:
-                st.number_input(
-                    f"推測規定値 {i+1} の数字",
-                    min_value=0.0,
-                    step=0.01,
-                    format=value_format,
-                    value=st.session_state["user_input"].get(f"推測規定値{i+1}_数字", 0.0),
-                    key=f"推測規定値{i+1}_数字"
-                )
+            st.number_input(
+                f"推測規定値 {i+1} の数字",
+                min_value=0.0,
+                step=0.01,
+                format=value_format,
+                value=float(st.session_state["user_input"].get(f"推測規定値{i+1}_数字", 0.0)),
+                key=f"推測規定値{i+1}_数字"
+            )
             
             st.text_input(
                 f"推測規定値 {i+1} の単位",
@@ -1657,7 +1654,7 @@ elif st.session_state["page"] == "page3B":
                 value = float(load_factor_table.get(equipment, 0.0)) # デフォルト値を0.0に設定
             else:
                 equipment = st.session_state["user_input"].get("設備", "")
-                name, unit, value = f"{equipment}平均容量", "kW", 1.0  # 初期値を1.0に設定
+                name, unit, value = f"{equipment}平均容量", "kW", 0.0  # 初期値を1.0に設定
             
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_名前", name)
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_数字", value)
