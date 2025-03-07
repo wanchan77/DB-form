@@ -1507,17 +1507,40 @@ elif st.session_state["page"] == "page3A":
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_名前", name)
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_数字", value)
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_単位", unit)
+            st.session_state["user_input"].setdefault(f"推測規定値{i+1}_説明", description)
             
-            st.text_input(f"推測規定値 {i+1} の名前", value=st.session_state["user_input"][f"推測規定値{i+1}_名前"], key=f"推測規定値{i+1}_名前")
+            st.text_input(
+            f"推測規定値 {i+1} の名前",
+            value=st.session_state["user_input"].get(f"推測規定値{i+1}_名前", ""),
+            key=f"推測規定値{i+1}_名前"
+            )
             
             if isinstance(value, str):
                 st.write(value)
             else:
-                st.number_input(f"推測規定値 {i+1} の数字", min_value=0.0, step=0.01, format=value_format, value=st.session_state["user_input"][f"推測規定値{i+1}_数字"], key=f"推測規定値{i+1}_数字")
+                st.number_input(
+                    f"推測規定値 {i+1} の数字",
+                    min_value=0.0,
+                    step=0.01,
+                    format=value_format,
+                    value=st.session_state["user_input"].get(f"推測規定値{i+1}_数字", 0.0),
+                    key=f"推測規定値{i+1}_数字"
+                )
             
-            st.text_input(f"推測規定値 {i+1} の単位", value=st.session_state["user_input"][f"推測規定値{i+1}_単位"], key=f"推測規定値{i+1}_単位")
-
+            st.text_input(
+                f"推測規定値 {i+1} の単位",
+                value=st.session_state["user_input"].get(f"推測規定値{i+1}_単位", ""),
+                key=f"推測規定値{i+1}_単位"
+            )
+            
+            st.text_area(
+                f"推測規定値 {i+1} の説明",
+                value=st.session_state["user_input"].get(f"推測規定値{i+1}_説明", ""),
+                key=f"推測規定値{i+1}_説明"
+            )
+        
         submitted = st.form_submit_button("入力を確定")
+
 
 
     if submitted:
