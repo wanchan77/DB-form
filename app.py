@@ -114,66 +114,67 @@ elif st.session_state["page"] == "page2A":
         "揮発油": ("揮発油価格", 183.5, "円/l", "https://pps-net.org/oilstand"),
     }
 
-    # **GHG削減量計算式**
-    st.session_state["user_input"]["GHG削減量計算式"] = st.text_area(
-        "GHG削減量計算式",
-        f"CO2削減量<t-CO2/年>={st.session_state['user_input'].get('設備', '')}{{{st.session_state['user_input'].get('燃料', '')}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>"
-    )
-
-    # **コスト削減額計算式**
-    fuel = st.session_state["user_input"].get("燃料", "")
-    if fuel == "電力":
-        emission_factor_str = "電気の排出係数<t-CO2/kWh>"
-        fuel_price_str = "電気料金<円/kWh>"
-    elif fuel == "都市ガス":
-        emission_factor_str = "都市ガス{13A}の排出係数<t-CO2/㎥>"
-        fuel_price_str = "都市ガス{13A}料金<円/㎥>"
-    else:
-        emission_name, _, emission_unit, _ = emission_factors.get(fuel, ("", 0, "", ""))
-        price_name, _, price_unit, _ = fuel_prices.get(fuel, ("", 0, "", ""))
-        emission_factor_str = f"{fuel}の排出係数<{emission_unit}>"
-        fuel_price_str = f"{price_name}<{price_unit}>"
-
-    st.session_state["user_input"]["コスト削減額計算式"] = st.text_area(
-        "コスト削減額計算式",
-        f"コスト削減額<円/年>={st.session_state['user_input'].get('設備', '')}{{{fuel}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>÷{emission_factor_str}×{fuel_price_str}"
-    )
-
-    # **投資額計算式**
-    st.session_state["user_input"]["投資額計算式"] = st.text_area("投資額計算式", "なし")
-
-    # **追加投資額計算式**
-    st.session_state["user_input"]["追加投資額計算式"] = st.text_area("追加投資額計算式", "なし")
-
-
-    st.subheader("取得済みインプット")
-    st.session_state["user_input"]["取得済みインプットの名前"] = st.text_input("インプットの名前", f"{st.session_state['user_input'].get('設備', '')}{{{st.session_state['user_input'].get('燃料', '')}}}のCO2排出量")
-    st.session_state["user_input"]["取得済みインプットの数字"] = st.number_input("数字", value=200.0, min_value=0.0, step=1.0)
-    st.session_state["user_input"]["取得済みインプットの単位"] = st.text_input("単位", "t-CO2")
-
-    # **追加インプット 6個**
-    for i in range(6):
-        st.subheader(f"追加インプット {i+1}")
-        name_key = f"追加インプット{i+1}の名前"
-        num_key = f"追加インプット{i+1}の数字"
-        unit_key = f"追加インプット{i+1}の単位"
-
-        st.session_state["user_input"][name_key] = st.text_input(name_key, "対象設備の中で施策を実施する設備の割合" if i == 0 else "")
-        st.session_state["user_input"][num_key] = st.number_input(num_key, value=50.0 if i == 0 else 0.0, min_value=0.0, step=1.0)
-        st.session_state["user_input"][unit_key] = st.text_input(unit_key, "%" if i == 0 else "")
-
-    # 燃料取得
-    fuel = st.session_state["user_input"].get("燃料", "")
-
-   # 事前定義された値
-    # 事前定義された値
-    predefined_values = [
-        ("電気の排出係数", 0.000434 if fuel == "電力" else None, "t-CO2/kWh", "・環境省令和5年：0.000434(t-CO2/kWh)\nhttps://ghg-santeikohyo.env.go.jp/files/calc/r05_coefficient_rev4.pdf\n\n・環境省：0.000488(t-CO2/kWh)\n環境省のエクセル" if fuel == "電力" else ""),
-        ("電気料金", 22.97 if fuel == "電力" else None, "円/kWh", "・新電力ネット(高圧)22.97(円/kWh)\nhttps://pps-net.org/unit\n\n・環境省：12.1587 (円/kWh)\n環境省のエクセル" if fuel == "電力" else ""),
-        ("想定稼働年数", 10, "年", "")
-    ]
-
     with st.form("input_form"):
+
+        # **GHG削減量計算式**
+        st.session_state["user_input"]["GHG削減量計算式"] = st.text_area(
+            "GHG削減量計算式",
+            f"CO2削減量<t-CO2/年>={st.session_state['user_input'].get('設備', '')}{{{st.session_state['user_input'].get('燃料', '')}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>"
+        )
+
+        # **コスト削減額計算式**
+        fuel = st.session_state["user_input"].get("燃料", "")
+        if fuel == "電力":
+            emission_factor_str = "電気の排出係数<t-CO2/kWh>"
+            fuel_price_str = "電気料金<円/kWh>"
+        elif fuel == "都市ガス":
+            emission_factor_str = "都市ガス{13A}の排出係数<t-CO2/㎥>"
+            fuel_price_str = "都市ガス{13A}料金<円/㎥>"
+        else:
+            emission_name, _, emission_unit, _ = emission_factors.get(fuel, ("", 0, "", ""))
+            price_name, _, price_unit, _ = fuel_prices.get(fuel, ("", 0, "", ""))
+            emission_factor_str = f"{fuel}の排出係数<{emission_unit}>"
+            fuel_price_str = f"{price_name}<{price_unit}>"
+
+        st.session_state["user_input"]["コスト削減額計算式"] = st.text_area(
+            "コスト削減額計算式",
+            f"コスト削減額<円/年>={st.session_state['user_input'].get('設備', '')}{{{fuel}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>÷{emission_factor_str}×{fuel_price_str}"
+        )
+
+        # **投資額計算式**
+        st.session_state["user_input"]["投資額計算式"] = st.text_area("投資額計算式", "なし")
+
+        # **追加投資額計算式**
+        st.session_state["user_input"]["追加投資額計算式"] = st.text_area("追加投資額計算式", "なし")
+
+
+        st.subheader("取得済みインプット")
+        st.session_state["user_input"]["取得済みインプットの名前"] = st.text_input("インプットの名前", f"{st.session_state['user_input'].get('設備', '')}{{{st.session_state['user_input'].get('燃料', '')}}}のCO2排出量")
+        st.session_state["user_input"]["取得済みインプットの数字"] = st.number_input("数字", value=200.0, min_value=0.0, step=1.0)
+        st.session_state["user_input"]["取得済みインプットの単位"] = st.text_input("単位", "t-CO2")
+
+        # **追加インプット 6個**
+        for i in range(6):
+            st.subheader(f"追加インプット {i+1}")
+            name_key = f"追加インプット{i+1}の名前"
+            num_key = f"追加インプット{i+1}の数字"
+            unit_key = f"追加インプット{i+1}の単位"
+
+            st.session_state["user_input"][name_key] = st.text_input(name_key, "対象設備の中で施策を実施する設備の割合" if i == 0 else "")
+            st.session_state["user_input"][num_key] = st.number_input(num_key, value=50.0 if i == 0 else 0.0, min_value=0.0, step=1.0)
+            st.session_state["user_input"][unit_key] = st.text_input(unit_key, "%" if i == 0 else "")
+
+        # 燃料取得
+        fuel = st.session_state["user_input"].get("燃料", "")
+
+    # 事前定義された値
+        # 事前定義された値
+        predefined_values = [
+            ("電気の排出係数", 0.000434 if fuel == "電力" else None, "t-CO2/kWh", "・環境省令和5年：0.000434(t-CO2/kWh)\nhttps://ghg-santeikohyo.env.go.jp/files/calc/r05_coefficient_rev4.pdf\n\n・環境省：0.000488(t-CO2/kWh)\n環境省のエクセル" if fuel == "電力" else ""),
+            ("電気料金", 22.97 if fuel == "電力" else None, "円/kWh", "・新電力ネット(高圧)22.97(円/kWh)\nhttps://pps-net.org/unit\n\n・環境省：12.1587 (円/kWh)\n環境省のエクセル" if fuel == "電力" else ""),
+            ("想定稼働年数", 10, "年", "")
+        ]
+
         for name, value, unit, description in predefined_values:
             st.subheader(f"規定値: {name}")
             
@@ -192,47 +193,47 @@ elif st.session_state["page"] == "page2A":
                 format="%.6f" if name == "電気の排出係数" else "%.2f",
                 value=float(value)
             )
+        
             
-            st.session_state["user_input"][f"規定値_{name}_単位"] = st.text_input(f"規定値({name})の単位", value=unit if fuel == "電力" else "")
-            st.session_state["user_input"][f"規定値_{name}_説明"] = st.text_area(f"規定値({name})の説明", value=description if fuel == "電力" else "")
-        
-        submitted = st.form_submit_button("入力を確定")
+            st.session_state["user_input"][f"規定値_{name}_単位"] = st.text_input(f"規定値({name})の単位", value=unit if value is not None else "")
+            st.session_state["user_input"][f"規定値_{name}_説明"] = st.text_area(f"規定値({name})の説明", value=description if value is not None else "")
 
-    # **追加の規定値 13個**
-    for i in range(13):
-        st.subheader(f"規定値 {i+1}")
-        fuel = st.session_state["user_input"].get("燃料", "")
-        value_format = "%.2f"
-    
-        if i == 0:
-            name, unit = "省エネ率", "%"
-            value = None
-        elif i == 1:
-            name, value, unit, description = emission_factors.get(fuel, ("", None, "", ""))
-            value_format = "%.6f"
-        elif i == 2:
-            name, value, unit, description = fuel_prices.get(fuel, ("", None, "", ""))
-            value_format = "%.2f"
-        else:
-            name, value, unit, description = "", None, "", ""
+        # **追加の規定値 13個**
+        for i in range(13):
+            st.subheader(f"規定値 {i+1}")
+            fuel = st.session_state["user_input"].get("燃料", "")
             value_format = "%.2f"
         
-        st.session_state["user_input"][f"規定値{i+1}_名前"] = st.text_input(f"規定値 {i+1} の名前", value=name)
-        st.session_state["user_input"][f"規定値{i+1}_数字"] = st.number_input(
-            f"規定値 {i+1} の数字",
-            min_value=0.0 ,
-            step=0.000001 if i == 1 else 0.01,
-            format=value_format,
-            value=value
-        )
-        st.session_state["user_input"][f"規定値{i+1}_単位"] = st.text_input(f"規定値 {i+1} の単位", value=unit)
-        st.session_state["user_input"][f"規定値{i+1}_説明"] = st.text_area(f"規定値 {i+1} の説明", value=description)
+            if i == 0:
+                name, unit = "省エネ率", "%"
+                value = None
+            elif i == 1:
+                name, value, unit, description = emission_factors.get(fuel, ("", None, "", ""))
+                value_format = "%.6f"
+            elif i == 2:
+                name, value, unit, description = fuel_prices.get(fuel, ("", None, "", ""))
+                value_format = "%.2f"
+            else:
+                name, value, unit, description = "", None, "", ""
+                value_format = "%.2f"
+            
+            st.session_state["user_input"][f"規定値{i+1}_名前"] = st.text_input(f"規定値 {i+1} の名前", value=name)
+            st.session_state["user_input"][f"規定値{i+1}_数字"] = st.number_input(
+                f"規定値 {i+1} の数字",
+                min_value=0.0 ,
+                step=0.000001 if i == 1 else 0.01,
+                format=value_format,
+                value=value
+            )
+            st.session_state["user_input"][f"規定値{i+1}_単位"] = st.text_input(f"規定値 {i+1} の単位", value=unit)
+            st.session_state["user_input"][f"規定値{i+1}_説明"] = st.text_area(f"規定値 {i+1} の説明", value=description)
 
-    # **推測値テンプレートの選択**
-    prediction_template = st.selectbox("推測値のテンプレはどれを使用しますか？", ["1(容量推測)", "2(台数推測)", "3(自由入力)"])
-    st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
+        # **推測値テンプレートの選択**
+        prediction_template = st.selectbox("推測値のテンプレはどれを使用しますか？", ["1(容量推測)", "2(台数推測)", "3(自由入力)"])
+        st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
+    submitted = st.form_submit_button("入力を確定")
 
-    if st.button("次へ"):
+    if submitted:
         st.session_state["previous_page"] = st.session_state["page"]  # 現在のページを保存
         if prediction_template.startswith("1"):
             next_page("page3A")
