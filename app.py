@@ -209,8 +209,8 @@ elif st.session_state["page"] == "page2A":
 
         # **事前定義された値**
         predefined_values = [
-            ("電気の排出係数", 0.000434 if fuel == "電力" else None, "t-CO2/kWh", "・環境省令和5年：0.000434(t-CO2/kWh)\nhttps://ghg-santeikohyo.env.go.jp/files/calc/r05_coefficient_rev4.pdf" if fuel == "電力" else ""),
-            ("電気料金", 22.97 if fuel == "電力" else None, "円/kWh", "・新電力ネット(高圧)22.97(円/kWh)\nhttps://pps-net.org/unit" if fuel == "電力" else ""),
+            ("電気の排出係数", 0.000434 if fuel == "電力" else 0.0, "t-CO2/kWh", "・環境省令和5年：0.000434(t-CO2/kWh)\nhttps://ghg-santeikohyo.env.go.jp/files/calc/r05_coefficient_rev4.pdf" if fuel == "電力" else ""),
+            ("電気料金", 22.97 if fuel == "電力" else 0.0, "円/kWh", "・新電力ネット(高圧)22.97(円/kWh)\nhttps://pps-net.org/unit" if fuel == "電力" else ""),
             ("想定稼働年数", 10, "年", "")
         ]
 
