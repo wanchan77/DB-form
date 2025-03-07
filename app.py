@@ -1763,7 +1763,7 @@ elif st.session_state["page"] == "page3C":
         
         submitted = st.form_submit_button("入力を確定")
 
-    if st.button("次へ"):
+    if submitted:
         next_page("summary")
     if "previous_page" in st.session_state:
         if st.button("戻る"):
