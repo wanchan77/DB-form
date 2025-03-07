@@ -1690,6 +1690,12 @@ elif st.session_state["page"] == "page3B":
         
         submitted = st.form_submit_button("入力を確定")
 
+    if submitted:
+        next_page("summary")
+    if "previous_page" in st.session_state:
+        if st.button("戻る"):
+            next_page(st.session_state["previous_page"])
+
 elif st.session_state["page"] == "page3C":
     st.title("自由入力")
     st.text_area("自由入力の詳細を入力してください")
