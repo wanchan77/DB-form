@@ -834,16 +834,28 @@ elif st.session_state["page"] == "page2C":
             st.session_state["user_input"][f"規定値{i+1}_名前"] = st.text_input(f"規定値 {i+1} の名前", value=st.session_state["user_input"][f"規定値{i+1}_名前"])
             key = f"規定値{i+1}_数字"
 
-            # デフォルト値を設定し、型をfloatに統一
-            if key not in st.session_state["user_input"]:
-                st.session_state["user_input"][key] = 0.0  # floatに統一
+            # セッションステートの値を取得し、型をチェック
+            current_value = st.session_state["user_input"].get(key, 0.0)
 
+            # 値が `None` なら 0.0 を設定
+            if current_value is None:
+                current_value = 0.0
+
+            # 文字列の場合は float に変換（空文字 `""` の場合は 0.0 にする）
+            elif isinstance(current_value, str):
+                try:
+                    current_value = float(current_value) if current_value.strip() else 0.0
+                except ValueError:
+                    current_value = 0.0  # 数値に変換できなければ 0.0 にする
+
+            # Streamlit の number_input に渡す
             st.session_state["user_input"][key] = st.number_input(
                 key,
-                value=float(st.session_state["user_input"][key]),  # 確実にfloatにする
-                min_value=0.0,  # ここはfloatのままでOK
-                step=1.0  # ここを `float(st.session_state["user_input"][key"])` に合わせる
+                value=current_value,  # 確実に float にする
+                min_value=0.0,
+                step=1.0
             )
+
             st.session_state["user_input"][f"規定値{i+1}_単位"] = st.text_input(f"規定値 {i+1} の単位", value=st.session_state["user_input"][f"規定値{i+1}_単位"])
             st.session_state["user_input"][f"規定値{i+1}_説明"] = st.text_area(f"規定値 {i+1} の説明", value=st.session_state["user_input"][f"規定値{i+1}_説明"])
 
