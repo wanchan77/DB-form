@@ -119,8 +119,11 @@ elif st.session_state["page"] == "page2A":
         # **GHG削減量計算式**
         st.session_state["user_input"]["GHG削減量計算式"] = st.text_area(
             "GHG削減量計算式",
+            value=st.session_state["user_input"].get(
             f"CO2削減量<t-CO2/年>={st.session_state['user_input'].get('設備', '')}{{{st.session_state['user_input'].get('燃料', '')}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>"
+            )
         )
+
 
         # **コスト削減額計算式**
         fuel = st.session_state["user_input"].get("燃料", "")
