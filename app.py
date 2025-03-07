@@ -157,14 +157,16 @@ elif st.session_state["page"] == "page2A":
     # **追加の規定値 13個**
     for i in range(13):
         st.subheader(f"規定値 {i+1}")
-        if i == 2:
+        if i == 1:
             fuel = st.session_state["user_input"]["燃料"]
-            name, value, unit, description = emission_factors.get(fuel, ("", 0, "", ""))
+            name, value, unit, description = emission_factors.get(fuel, ("", None, "", ""))
+            value_format = "%.6f"
         else:
             name, value, unit, description = "", None, "", ""
+            value_format = "%.2f"
         
         st.session_state["user_input"][f"規定値{i+1}_名前"] = st.text_input(f"規定値 {i+1} の名前", value=name)
-        st.session_state["user_input"][f"規定値{i+1}_数字"] = st.number_input(f"規定値 {i+1} の数字", min_value=0.0, step=0.01, format="%.2f", value=value)
+        st.session_state["user_input"][f"規定値{i+1}_数字"] = st.number_input(f"規定値 {i+1} の数字", min_value=0.0, step=0.000001 if i == 1 else 0.01, format=value_format, value=value if value is not None else 0.0)
         st.session_state["user_input"][f"規定値{i+1}_単位"] = st.text_input(f"規定値 {i+1} の単位", value=unit)
         st.session_state["user_input"][f"規定値{i+1}_説明"] = st.text_area(f"規定値 {i+1} の説明", value=description)
 
