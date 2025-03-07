@@ -1572,28 +1572,50 @@ elif st.session_state["page"] == "page2F":
             name_display = name if fuel == "電力" or name not in ["電気の排出係数", "電気料金"] else "燃料が電力ではありません"
             value_display = value if fuel == "電力" or name not in ["電気の排出係数", "電気料金"] else 0.0
 
-            # セッションステートにデフォルト値をセット
+            # `規定値({name})の名前` の入力
             st.session_state["user_input"].setdefault(f"規定値({name})の名前", "")
-            st.session_state["user_input"].setdefault(f"規定値({name})の数字", "")
-            st.session_state["user_input"].setdefault(f"規定値({name})の単位", "")
-            st.session_state["user_input"].setdefault(f"規定値({name})の説明", "")
-
-            # ユーザー入力欄
             st.session_state["user_input"][f"規定値({name})の名前"] = st.text_input(
                 f"規定値({name})の名前", value=st.session_state["user_input"][f"規定値({name})の名前"]
             )
-            st.session_state["user_input"][f"規定値({name})の数字"] = st.number_input(
-                f"規定値({name})の数字",
+
+            # `規定値({name})の数字` の入力（エラー回避処理を追加）
+            key = f"規定値({name})の数字"
+
+            # セッションステートから値を取得し、型をチェック
+            current_value = st.session_state["user_input"].get(key, 0.0)
+
+            # None の場合は 0.0 を設定
+            if current_value is None:
+                current_value = 0.0
+
+            # 文字列の場合は float に変換（空文字 `""` の場合は 0.0 にする）
+            elif isinstance(current_value, str):
+                try:
+                    current_value = float(current_value) if current_value.strip() else 0.0
+                except ValueError:
+                    current_value = 0.0  # 数値に変換できなければ 0.0 にする
+
+            # `value`, `min_value`, `step` を float に統一
+            st.session_state["user_input"][key] = st.number_input(
+                key,
                 min_value=0.0,
-                step=float(0.000001 if name == "電気の排出係数" else 0.01),
+                step=0.000001 if name == "電気の排出係数" else 0.01,  # float に統一
                 format="%.6f" if name == "電気の排出係数" else "%.2f",
-                value=st.session_state["user_input"][f"規定値({name})の数字"]
+                value=float(current_value)  # ここを確実に float にする
             )
+
+            # `規定値({name})の単位` の入力
+            st.session_state["user_input"].setdefault(f"規定値({name})の単位", "")
             st.session_state["user_input"][f"規定値({name})の単位"] = st.text_input(
                 f"規定値({name})の単位", value=st.session_state["user_input"][f"規定値({name})の単位"]
             )
+
+            # `規定値({name})の説明` の入力
+            st.session_state["user_input"].setdefault(f"規定値({name})の説明", "")
             st.session_state["user_input"][f"規定値({name})の説明"] = st.text_area(
                 f"規定値({name})の説明", value=st.session_state["user_input"][f"規定値({name})の説明"]
+)
+
     )
 
         # **追加の規定値 13個**
