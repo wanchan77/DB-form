@@ -271,7 +271,7 @@ elif st.session_state["page"] == "page2A":
             elif i == 2:
                 name, value, unit, description = fuel_prices.get(fuel, ("", None, "", ""))
                 value_format = "%.2f"
-            elif i == 6:
+            elif i == 5:
                 # `fuel_heat` から燃料の熱量を取得
                 name, value, unit, description = fuel_heat.get(fuel, ("", None, "", ""))
                 value_format = "%.2f"
