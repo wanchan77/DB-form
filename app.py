@@ -851,7 +851,7 @@ elif st.session_state["page"] == "page2C":
             # Streamlit の number_input に渡す
             st.session_state["user_input"][key] = st.number_input(
                 key,
-                value=current_value,  # 確実に float にする
+                value=float(current_value),  # 確実に float にする
                 min_value=0.0,
                 step=1.0
             )
