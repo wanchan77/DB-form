@@ -814,13 +814,13 @@ elif st.session_state["page"] == "page2C":
                 name, unit = f"新{neworold_scope_equipment}効率", "%"
                 value = 0.0
             elif i == 8:
-                name, value, unit, description = emission_factors.get(neworold_scope_fuel, ("", None, "", ""))
+                name, value, unit, description = emission_factors.get(neworold_scope_fuel, ("", 0.0, "", ""))
                 value_format = "%.6f"
             elif i == 9:
-                name, value, unit, description = fuel_prices.get(neworold_scope_fuel, ("", None, "", ""))
+                name, value, unit, description = fuel_prices.get(neworold_scope_fuel, ("", 0.0, "", ""))
                 value_format = "%.2f"
             elif i == 10:
-                name, value, unit, description = fuel_heat.get(neworold_scope_fuel, ("", None, "", ""))
+                name, value, unit, description = fuel_heat.get(neworold_scope_fuel, ("", 0.0, "", ""))
                 value_format = "%.2f"
             else:
                 name, value, unit, description = "", None, "", ""
