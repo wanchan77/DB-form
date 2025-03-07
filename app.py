@@ -162,10 +162,10 @@ elif st.session_state["page"] == "page2A":
         st.session_state["user_input"][num_key] = st.number_input(num_key, value=50.0 if i == 0 else None, min_value=0.0, step=1.0)
         st.session_state["user_input"][unit_key] = st.text_input(unit_key, "%" if i == 0 else "")
 
-    # 規定値 3つを個別に配置
+    # 事前定義された値
     predefined_values = [
-        ("電気の排出係数", 0.000434, "t-CO2/kWh", "・環境省令和5年：0.000434(t-CO2/kWh)\nhttps://ghg-santeikohyo.env.go.jp/files/calc/r05_coefficient_rev4.pdf\n\n・環境省：0.000488(t-CO2/kWh)\n環境省のエクセル"),
-        ("電気料金", 22.97, "円/kWh", "・新電力ネット(高圧)22.97(円/kWh)\nhttps://pps-net.org/unit\n\n・環境省：12.1587 (円/kWh)\n環境省のエクセル"),
+        ("電気の排出係数", 0.000434 if fuel == "電力" else None, "t-CO2/kWh", "・環境省令和5年：0.000434(t-CO2/kWh)\nhttps://ghg-santeikohyo.env.go.jp/files/calc/r05_coefficient_rev4.pdf\n\n・環境省：0.000488(t-CO2/kWh)\n環境省のエクセル" if fuel == "電力" else ""),
+        ("電気料金", 22.97 if fuel == "電力" else None, "円/kWh", "・新電力ネット(高圧)22.97(円/kWh)\nhttps://pps-net.org/unit\n\n・環境省：12.1587 (円/kWh)\n環境省のエクセル" if fuel == "電力" else ""),
         ("想定稼働年数", 10, "年", "")
     ]
 
@@ -174,13 +174,13 @@ elif st.session_state["page"] == "page2A":
         st.session_state["user_input"][f"規定値_{name}_名前"] = st.text_input(f"規定値({name})の名前", value=name)
         st.session_state["user_input"][f"規定値_{name}_数字"] = st.number_input(
             f"規定値({name})の数字",
-            min_value=0.0,
+            min_value=0.0 if value is not None else None,
             step=0.000001 if name == "電気の排出係数" else 0.01,
             format="%.6f" if name == "電気の排出係数" else "%.2f",
-            value=float(value)
+            value=value if value is not None else None
         )
-        st.session_state["user_input"][f"規定値_{name}_単位"] = st.text_input(f"規定値({name})の単位", value=unit)
-        st.session_state["user_input"][f"規定値_{name}_説明"] = st.text_area(f"規定値({name})の説明", value=description)
+        st.session_state["user_input"][f"規定値_{name}_単位"] = st.text_input(f"規定値({name})の単位", value=unit if value is not None else "")
+        st.session_state["user_input"][f"規定値_{name}_説明"] = st.text_area(f"規定値({name})の説明", value=description if value is not None else "")
 
 
     # **追加の規定値 13個**
