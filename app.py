@@ -84,6 +84,36 @@ elif st.session_state["page"] == "page2A":
     st.title("運用改善系施策式入力")
     st.write(f"現在入力中の施策：{st.session_state['user_input']['設備']} {st.session_state['user_input']['施策名']} {st.session_state['user_input']['燃料']}")
 
+     # 燃料ごとの排出係数データ
+    emission_factors = {
+        "都市ガス": ("都市ガス{13A}の排出係数", 0.00223, "t-CO2/㎥", "https://www.env.go.jp/nature/info/onsen_ondanka/h23-2/ref02.pdf"),
+        "LPG": ("LPGの排出係数", 0.0066, "t-CO2/㎥", "https://www.env.go.jp/nature/info/onsen_ondanka/h23-2/ref02.pdf"),
+        "灯油": ("灯油の排出係数", 0.00249, "t-CO2/l", "https://www.env.go.jp/nature/info/onsen_ondanka/h23-2/ref02.pdf"),
+        "A重油": ("A重油の排出係数", 0.00271, "t-CO2/l", "https://ghg-santeikohyo.env.go.jp/files/manual/chpt2_4-9_rev.pdf"),
+        "B・C重油": ("B・C重油の排出係数", 0.003, "t-CO2/l", "https://ghg-santeikohyo.env.go.jp/files/manual/chpt2_4-9_rev.pdf"),
+        "LNG": ("LNGの排出係数", 2.7, "t-CO2/t", "https://shift.env.go.jp/files/offering/2023/sf05f2.pdf"),
+        "温水": ("温水の排出係数", 0.0532, "t-CO2/GJ", "https://ghg-santeikohyo.env.go.jp/files/calc/r06_heat_coefficient_rev3.pdf"),
+        "冷水": ("冷水の排出係数", 0.0532, "t-CO2/GJ", "https://ghg-santeikohyo.env.go.jp/files/calc/r06_heat_coefficient_rev3.pdf"),
+        "石炭": ("石炭の排出係数", 2.33, "t-CO2/t", "https://ghg-santeikohyo.env.go.jp/files/manual/chpt2_4-9_rev.pdf"),
+        "軽油": ("軽油の排出係数", 0.00258, "t-CO2/l", "https://www.env.go.jp/content/900443021.pdf"),
+        "揮発油": ("揮発油の排出係数", 0.00232, "t-CO2/l", "https://www.env.go.jp/content/900443021.pdf"),
+    }
+
+    # 燃料ごとの価格データ
+    fuel_prices = {
+        "都市ガス": ("都市ガス{13A}料金", 78, "円/㎥", "https://www.env.go.jp/content/000123580.pdf"),
+        "LPG": ("LPG価格", 314, "円/㎥", "https://www.j-lpgas.gr.jp/stat/kakaku/index.html"),
+        "灯油": ("灯油価格", 115.8, "円/l", "https://www.pref.miyazaki.lg.jp/seikatsu-kyodo-danjo/bosai/shohi/index.html"),
+        "A重油": ("A重油の価格", 95.5, "円/l", "https://pps-net.org/industrial"),
+        "B・C重油": ("B・C重油の価格", 87.51, "円/l", "https://pps-net.org/industrial"),
+        "LNG": ("LNG価格", 135434, "円/t", "https://oilgas-info.jogmec.go.jp/nglng/1007905/1009580.html"),
+        "温水": ("温水の価格", 5000, "円/GJ", "https://www.tokyo-rinnetu.co.jp/discounted/"),
+        "冷水": ("冷水の価格", 5000, "円/GJ", "https://www.tokyo-rinnetu.co.jp/discounted/"),
+        "石炭": ("石炭の価格", 19370, "円/t", "https://pps-net.org/statistics/coal2"),
+        "軽油": ("軽油価格", 154.6, "円/l", "https://www.pref.miyazaki.lg.jp/seikatsu-kyodo-danjo/bosai/shohi/index.html"),
+        "揮発油": ("揮発油価格", 183.5, "円/l", "https://pps-net.org/oilstand"),
+    }
+
     # **GHG削減量計算式**
     st.session_state["user_input"]["GHG削減量計算式"] = st.text_area(
         "GHG削減量計算式",
@@ -91,9 +121,22 @@ elif st.session_state["page"] == "page2A":
     )
 
     # **コスト削減額計算式**
+    fuel = st.session_state["user_input"].get("燃料", "")
+    if fuel == "電力":
+        emission_factor_str = "電気の排出係数<t-CO2/kWh>"
+        fuel_price_str = "電気料金<円/kWh>"
+    elif fuel == "都市ガス":
+        emission_factor_str = "都市ガス{13A}の排出係数<t-CO2/㎥>"
+        fuel_price_str = "都市ガス{13A}料金<円/㎥>"
+    else:
+        emission_name, _, emission_unit, _ = emission_factors.get(fuel, ("", 0, "", ""))
+        price_name, _, price_unit, _ = fuel_prices.get(fuel, ("", 0, "", ""))
+        emission_factor_str = f"{fuel}の排出係数<{emission_unit}>"
+        fuel_price_str = f"{price_name}<{price_unit}>"
+
     st.session_state["user_input"]["コスト削減額計算式"] = st.text_area(
         "コスト削減額計算式",
-        f"コスト削減額<円/年>={st.session_state['user_input'].get('設備', '')}{{{st.session_state['user_input'].get('燃料', '')}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>÷電気の排出係数<t-CO2/kWh>×電気料金<円/kWh>"
+        f"コスト削減額<円/年>={st.session_state['user_input'].get('設備', '')}{{{fuel}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>÷{emission_factor_str}×{fuel_price_str}"
     )
 
     # **投資額計算式**
@@ -139,20 +182,6 @@ elif st.session_state["page"] == "page2A":
         st.session_state["user_input"][f"規定値_{name}_単位"] = st.text_input(f"規定値 {name} の単位", value=unit)
         st.session_state["user_input"][f"規定値_{name}_説明"] = st.text_area(f"規定値 {name} の説明", value=description)
 
-     # 燃料ごとの排出係数データ
-    emission_factors = {
-        "都市ガス": ("都市ガスの排出係数", 0.00223, "t-CO2/㎥", "https://www.env.go.jp/nature/info/onsen_ondanka/h23-2/ref02.pdf"),
-        "LPG": ("LPGの排出係数", 0.0066, "t-CO2/㎥", "https://www.env.go.jp/nature/info/onsen_ondanka/h23-2/ref02.pdf"),
-        "灯油": ("灯油の排出係数", 0.00249, "t-CO2/l", "https://www.env.go.jp/nature/info/onsen_ondanka/h23-2/ref02.pdf"),
-        "A重油": ("A重油の排出係数", 0.00271, "t-CO2/l", "https://ghg-santeikohyo.env.go.jp/files/manual/chpt2_4-9_rev.pdf"),
-        "B・C重油": ("B・C重油の排出係数", 0.003, "t-CO2/l", "https://ghg-santeikohyo.env.go.jp/files/manual/chpt2_4-9_rev.pdf"),
-        "LNG": ("LNGの排出係数", 2.7, "t-CO2/t", "https://shift.env.go.jp/files/offering/2023/sf05f2.pdf"),
-        "温水": ("温水の排出係数", 0.0532, "t-CO2/GJ", "https://ghg-santeikohyo.env.go.jp/files/calc/r06_heat_coefficient_rev3.pdf"),
-        "冷水": ("冷水の排出係数", 0.0532, "t-CO2/GJ", "https://ghg-santeikohyo.env.go.jp/files/calc/r06_heat_coefficient_rev3.pdf"),
-        "石炭": ("石炭の排出係数", 2.33, "t-CO2/t", "https://ghg-santeikohyo.env.go.jp/files/manual/chpt2_4-9_rev.pdf"),
-        "軽油": ("軽油の排出係数", 0.00258, "t-CO2/l", "https://www.env.go.jp/content/900443021.pdf"),
-        "揮発油": ("揮発油の排出係数", 0.00232, "t-CO2/l", "https://www.env.go.jp/content/900443021.pdf"),
-    }
 
     # **追加の規定値 13個**
     for i in range(13):
