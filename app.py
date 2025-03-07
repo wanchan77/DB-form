@@ -58,9 +58,24 @@ if st.session_state["page"] == "page1":
     formula_template = st.selectbox("式はテンプレですか？", ["1(運用改善系)", "2(設備投資系)", "3(燃料転換系_1)", "4(燃料転換系_2)", "5(自由入力)"])
     st.session_state["user_input"]["テンプレ"] = formula_template
 
-    if formula_template == "5(自由入力)":
-        measure_type = st.selectbox("施策の種類はどれですか？(自由入力の場合のみ入力)", ["1(運用改善系)", "2(設備投資系)", "3(燃料転換系_1)", "4(燃料転換系_2)", "5(緑施策)"])
-        st.session_state["user_input"]["施策の種類"] = measure_type
+    neworold_scope = st.selectbox("燃料転換前or燃料転換後はどのScopeですか？(今回入力していない方の施策について)", ["Scope1", "Scope2"])
+    st.session_state["user_input"]["Neworoldscope"] = neworold_scope
+
+    if neworold_scope == "Scope1":
+        neworold_scope_equipment_options = ["空調(ボイラ)", "空調(冷凍機)", "空調(ウォータチラー空冷式)", "空調(ウォータチラー水冷式)", "空調(GHP)(パッケージ式)", "冷蔵/冷凍", "給湯", "発電", "自動車", "トラック", "重機/建機(トラック除く)", "船舶", "航空機", "溶解炉", "焼却炉", "生産用ボイラー", "バーナー", "生産用ヒーター", "クリーンルーム用空調(ボイラ)", "クリーンルーム用空調(冷凍機)", "クリーンルーム用空調(ウォータチラー空冷式)", "クリーンルーム用空調(ウォータチラー水冷式)", "クリーンルーム用空調(GHP)(パッケージ式)", "焼鈍炉", "乾燥炉", "焼結炉/焼成炉", "焼入れ炉", "鍛造炉・鍛造加熱炉", "メッキ槽・電着塗装", "焼戻し炉", "衣類用乾燥機", "工業用乾燥機", "自家用発電機", "その他(SCOPE1)", "SCOPE1全体"]
+        neworold_scope_fuel_options = ["軽油", "原油", "灯油", "LPG", "LNG", "揮発油", "コンデンセート", "ナフサ", "A重油", "B・C重油", "石油アスファルト", "石油コークス", "水素ガス", "その他可燃性天然ガス", "原料炭", "一般炭", "無煙炭", "石炭コークス", "コールタール", "コークス炉ガス", "高炉ガス", "転炉ガス", "都市ガス", "その他燃料", "全体(カーボンオフセット)"]
+    else:
+        neworold_scope_equipment_options = ["空調(電気)(パッケージ式)", "空調(電気)(冷凍機)", "空調(電気)(ウォーターチラー水冷式)", "空調(電気)(ウォーターチラー空冷式)", "冷蔵/冷凍", "給湯", "照明", "サーバー機器", "エレベータ", "コンプレッサー", "ポンプ", "送風機/給気・排気ファン", "電気自動車", "電動トラック", "その他(SCOPE2)", "SCOPE2全体"]
+        neworold_scope_fuel_options = ["電力","産業用蒸気", "産業用以外の蒸気", "温水", "冷水", "その他", "全体(カーボンオフセット)"]
+
+    neworold_scope_equipment = st.selectbox("燃料転換前or燃料転換後はどの設備の施策ですか？(今回入力していない方の施策について)", neworold_scope_equipment_options)
+    st.session_state["user_input"]["neworold_scope_設備"] = neworold_scope_equipment
+
+    neworold_scope_fuel = st.selectbox("燃料転換前or燃料転換後はどの燃料ですか？(今回入力していない方の施策について)", neworold_scope_fuel_options)
+    st.session_state["user_input"]["neworold_scope_燃料"] = neworold_scope_fuel
+
+    measure_type = st.selectbox("施策の種類はどれですか？(自由入力の場合のみ入力)", ["1(運用改善系)", "2(設備投資系)", "3(燃料転換系_1)", "4(燃料転換系_2)", "5(緑施策)"])
+    st.session_state["user_input"]["施策の種類"] = measure_type
 
     measures = st.text_input("施策名はなんですか？")
     st.session_state["user_input"]["施策名"] = measures
@@ -395,14 +410,14 @@ elif st.session_state["page"] == "page2B":
         )
 
         # **投資額計算式**
-        st.session_state["user_input"].setdefault("投資額計算式", "なし")
+        st.session_state["user_input"].setdefault("投資額計算式", "投資額=必要な代表値<単位>×対象設備の中で施策を実施する設備の割合<%>×代表値投資額原単位<円/単位>")
         st.session_state["user_input"]["投資額計算式"] = st.text_area(
             "投資額計算式",
             value=st.session_state["user_input"]["投資額計算式"]
         )
 
         # **追加投資額計算式**
-        st.session_state["user_input"].setdefault("追加投資額計算式", "なし")
+        st.session_state["user_input"].setdefault("追加投資額計算式", "追加投資額=必要な代表値<単位>×対象設備の中で施策を実施する設備の割合<%>×代表値追加投資額原単位<円/単位>")
         st.session_state["user_input"]["追加投資額計算式"] = st.text_area(
             "追加投資額計算式",
             value=st.session_state["user_input"]["追加投資額計算式"]
@@ -435,19 +450,36 @@ elif st.session_state["page"] == "page2B":
             num_key = f"追加インプット{i+1}の数字"
             unit_key = f"追加インプット{i+1}の単位"
 
-            st.session_state["user_input"].setdefault(name_key, "対象設備の中で施策を実施する設備の割合" if i == 0 else "")
+            # 名前のデフォルト値を設定
+            if i == 0:
+                default_name = "対象設備の中で施策を実施する設備の割合"
+                default_unit = "%"
+                default_value = 50.0
+            elif i == 1:
+                default_name = "必要な代表値"
+                default_unit = "単位"
+                default_value = 0.0
+            else:
+                default_name = ""
+                default_unit = ""
+                default_value = 0.0
+
+            # セッションステートにデフォルト値を設定
+            st.session_state["user_input"].setdefault(name_key, default_name)
+            st.session_state["user_input"].setdefault(num_key, default_value)
+            st.session_state["user_input"].setdefault(unit_key, default_unit)
+
+            # 入力フォーム
             st.session_state["user_input"][name_key] = st.text_input(
                 name_key,
                 value=st.session_state["user_input"][name_key]
             )
-            st.session_state["user_input"].setdefault(num_key, 50.0 if i == 0 else 0.0)
             st.session_state["user_input"][num_key] = st.number_input(
                 num_key,
                 value=st.session_state["user_input"][num_key],
                 min_value=0.0,
                 step=1.0
             )
-            st.session_state["user_input"].setdefault(unit_key, "%" if i == 0 else "")
             st.session_state["user_input"][unit_key] = st.text_input(
                 unit_key,
                 value=st.session_state["user_input"][unit_key]
@@ -507,6 +539,16 @@ elif st.session_state["page"] == "page2B":
                 value_format = "%.6f"
             elif i == 2:
                 name, value, unit, description = fuel_prices.get(fuel, ("", None, "", ""))
+                value_format = "%.2f"
+            elif i == 3:
+                name, value, unit = "代表値投資額原単位", "円/単位"
+                value = 0.0
+            elif i == 4:
+                name, value, unit = "代表値追加投資額原単位", "円/単位"
+                value = 0.0
+            elif i == 5:
+                # `fuel_heat` から燃料の熱量を取得
+                name, value, unit, description = fuel_heat.get(fuel, ("", None, "", ""))
                 value_format = "%.2f"
             else:
                 name, value, unit, description = "", None, "", ""
@@ -581,6 +623,18 @@ elif st.session_state["page"] == "page2C":
         "揮発油": ("揮発油価格", 183.5, "円/l", "https://pps-net.org/oilstand"),
     }
 
+    fuel_heat = {
+    "都市ガス": ("都市ガス{13A}の熱量", 44.8, "MJ/㎥", "https://www.env.go.jp/policy/local_keikaku/data/guideline.pdf"),
+    "LPG": ("LPGの熱量", 100.5, "MJ/㎥", "https://www.kanagawalpg.or.jp/lpg/01.html#:~:text=%EF%BC%AC%EF%BC%B0%E3%82%AC%E3%82%B9%E3%81%AE%E7%86%B1%E9%87%8F%E9%87%8F,%E5%8A%B9%E7%8E%87%E3%82%92%E3%81%8D%E3%81%A1%E3%82%93%E3%81%A8%E7%90%86%E8%A7%A3%E3%81%99%E3%82%8B%E3%80%82"),
+    "灯油": ("灯油の熱量", 36.7, "MJ/l", "https://www.ecofukuoka.jp/image/custom/data/santei/hatunetu.pdf"),
+    "A重油": ("A重油の熱量", 39.1, "MJ/l", "https://www.env.go.jp/policy/local_keikaku/data/guideline.pdf"),
+    "B・C重油": ("B・C重油の熱量", 41.9, "MJ/l", "https://www.env.go.jp/policy/local_keikaku/data/guideline.pdf"),
+    "LNG": ("LNGの熱量", 54500, "MJ/t", "https://www.ecofukuoka.jp/image/custom/data/santei/hatunetu.pdf"),
+    "石炭": ("石炭の熱量", 30100, "MJ/t", "https://www.ecofukuoka.jp/image/custom/data/santei/hatunetu.pdf"),
+    "軽油": ("軽油の熱量", 38.2, "MJ/l", "https://www.ecofukuoka.jp/image/custom/data/santei/hatunetu.pdf"),
+    "揮発油": ("揮発油の熱量", 34.6, "MJ/l", "https://www.ecofukuoka.jp/image/custom/data/santei/hatunetu.pdf")
+    }
+
     with st.form("input_form"):
 
         # **GHG削減量計算式**
@@ -613,14 +667,14 @@ elif st.session_state["page"] == "page2C":
         )
 
         # **投資額計算式**
-        st.session_state["user_input"].setdefault("投資額計算式", "なし")
+        st.session_state["user_input"].setdefault("投資額計算式", "投資額=必要な代表値<単位>×対象設備の中で施策を実施する設備の割合<%>×代表値投資額原単位<円/単位>")
         st.session_state["user_input"]["投資額計算式"] = st.text_area(
             "投資額計算式",
             value=st.session_state["user_input"]["投資額計算式"]
         )
 
         # **追加投資額計算式**
-        st.session_state["user_input"].setdefault("追加投資額計算式", "なし")
+        st.session_state["user_input"].setdefault("追加投資額計算式", "追加投資額=必要な代表値<単位>×対象設備の中で施策を実施する設備の割合<%>×代表値追加投資額原単位<円/単位>")
         st.session_state["user_input"]["追加投資額計算式"] = st.text_area(
             "追加投資額計算式",
             value=st.session_state["user_input"]["追加投資額計算式"]
@@ -653,19 +707,36 @@ elif st.session_state["page"] == "page2C":
             num_key = f"追加インプット{i+1}の数字"
             unit_key = f"追加インプット{i+1}の単位"
 
-            st.session_state["user_input"].setdefault(name_key, "対象設備の中で施策を実施する設備の割合" if i == 0 else "")
+            # 名前のデフォルト値を設定
+            if i == 0:
+                default_name = "対象設備の中で施策を実施する設備の割合"
+                default_unit = "%"
+                default_value = 50.0
+            elif i == 1:
+                default_name = "必要な代表値"
+                default_unit = "単位"
+                default_value = 0.0
+            else:
+                default_name = ""
+                default_unit = ""
+                default_value = 0.0
+
+            # セッションステートにデフォルト値を設定
+            st.session_state["user_input"].setdefault(name_key, default_name)
+            st.session_state["user_input"].setdefault(num_key, default_value)
+            st.session_state["user_input"].setdefault(unit_key, default_unit)
+
+            # 入力フォーム
             st.session_state["user_input"][name_key] = st.text_input(
                 name_key,
                 value=st.session_state["user_input"][name_key]
             )
-            st.session_state["user_input"].setdefault(num_key, 50.0 if i == 0 else 0.0)
             st.session_state["user_input"][num_key] = st.number_input(
                 num_key,
                 value=st.session_state["user_input"][num_key],
                 min_value=0.0,
                 step=1.0
             )
-            st.session_state["user_input"].setdefault(unit_key, "%" if i == 0 else "")
             st.session_state["user_input"][unit_key] = st.text_input(
                 unit_key,
                 value=st.session_state["user_input"][unit_key]
@@ -725,6 +796,16 @@ elif st.session_state["page"] == "page2C":
                 value_format = "%.6f"
             elif i == 2:
                 name, value, unit, description = fuel_prices.get(fuel, ("", None, "", ""))
+                value_format = "%.2f"
+            elif i == 3:
+                name, value, unit = "代表値投資額原単位", "円/単位"
+                value = 0.0
+            elif i == 4:
+                name, value, unit = "代表値追加投資額原単位", "円/単位"
+                value = 0.0
+            elif i == 5:
+                # `fuel_heat` から燃料の熱量を取得
+                name, value, unit, description = fuel_heat.get(fuel, ("", None, "", ""))
                 value_format = "%.2f"
             else:
                 name, value, unit, description = "", None, "", ""
