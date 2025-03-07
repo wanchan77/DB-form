@@ -216,12 +216,8 @@ elif st.session_state["page"] == "page2A":
 
         for name, value, unit, description in predefined_values:
             st.subheader(f"規定値: {name}")
-            
-            if fuel != "電力" and name in ["電気の排出係数", "電気料金"]:
-                name_display = "燃料が電力ではありません"
-                value = 0.0
-            else:
-                name_display = name
+            name_display = name if fuel == "電力" or name not in ["電気の排出係数", "電気料金"] else "燃料が電力ではありません"
+            value_display = value if fuel == "電力" or name not in ["電気の排出係数", "電気料金"] else 0.0
             
             st.text_input(f"規定値({name})の名前", value=name_display)
             st.number_input(
@@ -229,7 +225,7 @@ elif st.session_state["page"] == "page2A":
                 min_value=0.0,
                 step=0.000001 if name == "電気の排出係数" else 0.01,
                 format="%.6f" if name == "電気の排出係数" else "%.2f",
-                value=0.0 if value is None else value
+                value=value_display
             )
             st.text_input(f"規定値({name})の単位", value=unit if value is not None else "")
             st.text_area(f"規定値({name})の説明", value=description if value is not None else "")
@@ -272,6 +268,7 @@ elif st.session_state["page"] == "page2A":
         # **推測値テンプレートの選択**
         prediction_template = st.selectbox("推測値のテンプレはどれを使用しますか？", ["1(容量推測)", "2(台数推測)", "3(自由入力)"])
         st.session_state["user_input"].setdefault("推測値のテンプレ", prediction_template)
+        st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
         submitted = st.form_submit_button("入力を確定")
 
     if submitted:
