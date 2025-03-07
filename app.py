@@ -638,7 +638,7 @@ elif st.session_state["page"] == "page2C":
     with st.form("input_form"):
 
         # **GHG削減量計算式**
-        default_ghg_formula = f"CO2削減量<t-CO2/年>={st.session_state['user_input'].get('設備', '')}{{{st.session_state['user_input'].get('燃料', '')}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>"
+        default_ghg_formula = f"CO2削減量<t-CO2/年>={st.session_state['user_input'].get('設備', '')}{{{st.session_state['user_input'].get('燃料', '')}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>"
         st.session_state["user_input"].setdefault("GHG削減量計算式", default_ghg_formula)
         st.session_state["user_input"]["GHG削減量計算式"] = st.text_area(
             "GHG削減量計算式",
@@ -659,7 +659,7 @@ elif st.session_state["page"] == "page2C":
             emission_factor_str = f"{fuel}の排出係数<{emission_unit}>"
             fuel_price_str = f"{price_name}<{price_unit}>"
 
-        default_cost_formula = f"コスト削減額<円/年>={st.session_state['user_input'].get('設備', '')}{{{fuel}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>÷{emission_factor_str}×{fuel_price_str}"
+        default_cost_formula = f"コスト削減額<円/年>={st.session_state['user_input'].get('設備', '')}{{{fuel}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>÷{emission_factor_str}×{fuel_price_str}"
         st.session_state["user_input"].setdefault("コスト削減額計算式", default_cost_formula)
         st.session_state["user_input"]["コスト削減額計算式"] = st.text_area(
             "コスト削減額計算式",
@@ -786,12 +786,12 @@ elif st.session_state["page"] == "page2C":
         for i in range(13):
             st.subheader(f"規定値 {i+1}")
             fuel = st.session_state["user_input"].get("燃料", "")
+            equipment = st.session_state["user_input"].get("設備", "")
+            neworold_scope_fuel = st.session_state["user_input"].get("neworold_scope_燃料", "")
+            neworold_scope_equipment = st.session_state["user_input"].get("neworold_scope_設備", "")
             value_format = "%.2f"
         
-            if i == 0:
-                name, unit = "省エネ率", "%"
-                value = None
-            elif i == 1:
+            if i == 1:
                 name, value, unit, description = emission_factors.get(fuel, ("", None, "", ""))
                 value_format = "%.6f"
             elif i == 2:
@@ -806,6 +806,21 @@ elif st.session_state["page"] == "page2C":
             elif i == 5:
                 # `fuel_heat` から燃料の熱量を取得
                 name, value, unit, description = fuel_heat.get(fuel, ("", None, "", ""))
+                value_format = "%.2f"
+            elif i == 6:
+                name, value, unit = f"{equipment}効率", "%"
+                value = 0.0
+            elif i == 7:
+                name, value, unit = f"{neworold_scope_equipment}効率", "%"
+                value = 0.0
+            elif i == 8:
+                name, value, unit, description = emission_factors.get(neworold_scope_fuel, ("", None, "", ""))
+                value_format = "%.6f"
+            elif i == 9:
+                name, value, unit, description = fuel_prices.get(neworold_scope_fuel, ("", None, "", ""))
+                value_format = "%.2f"
+            elif i == 10:
+                name, value, unit, description = fuel_heat.get(neworold_scope_fuel, ("", None, "", ""))
                 value_format = "%.2f"
             else:
                 name, value, unit, description = "", None, "", ""
