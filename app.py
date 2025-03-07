@@ -1518,7 +1518,7 @@ elif st.session_state["page"] == "page3A":
                 min_value=0.0,
                 step=0.01,
                 format=value_format,
-                value=float(st.session_state["user_input"].get(f"推測規定値{i+1}_数字", 0.0)),
+                value=st.session_state["user_input"].get(f"推測規定値{i+1}_数字", 0.0),
                 key=f"推測規定値{i+1}_数字"
             )
             
