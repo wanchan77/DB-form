@@ -1434,7 +1434,21 @@ elif st.session_state["page"] == "page3A":
     "石炭": ("石炭の熱量", 30100, "MJ/t", "https://www.ecofukuoka.jp/image/custom/data/santei/hatunetu.pdf"),
     "軽油": ("軽油の熱量", 38.2, "MJ/l", "https://www.ecofukuoka.jp/image/custom/data/santei/hatunetu.pdf"),
     "揮発油": ("揮発油の熱量", 34.6, "MJ/l", "https://www.ecofukuoka.jp/image/custom/data/santei/hatunetu.pdf")
-}
+    }
+
+    # 負荷率データ
+    load_factor_table = {
+        "空調(電気)(パッケージ式)": 40, "空調(電気)(個別式)": 40, "冷蔵/冷凍": 45, "給湯": 75,
+        "照明": 60, "OA機器(パソコン、コピー機等)": 60, "サーバー機器": 40, "エレベータ": 50,
+        "コンプレッサー": 50, "ポンプ": 80, "送風機/給気・排気ファン": 50, "電気自動車": 60,
+        "織機": 90, "ベルトコンベア": 50, "溶解炉": 50, "ヒーター": 70,
+        "空調(電気)(冷凍機)": 40, "空調(電気)(ウォータチラー空冷式)": 40,
+        "空調(電気)(ウォータチラー水冷式)": 40, "攪拌機": 60, "充填機": 40,
+        "包装機": 50, "クリーンルーム用空調(電気)(パッケージ式)": 40,
+        "クリーンルーム用空調(電気)(冷凍機)": 40, "クリーンルーム用空調(電気)(ウォータチラー空冷式)": 40,
+        "クリーンルーム用空調(電気)(ウォータチラー水冷式)": 40, "曝気・水処理用ブロワ": 80,
+        "その他用途のブロワ": 80
+    }
 
 
     st.title("推測値(設備容量)入力")
@@ -1485,10 +1499,10 @@ elif st.session_state["page"] == "page3A":
                 value = 200.0
             elif i == 2:
                 name, unit = "負荷率", "%"
-                value = None
+                equipment = st.session_state["user_input"].get("設備", "")
+                value = load_factor_table.get(equipment, "負荷率表対応外、検索してください")  # 負荷率を取得（該当なしの場合、メッセージ表示）
             else:
-                name, value, unit, description = "", None, "", ""
-                value_format = "%.2f"
+                name, unit, value = "", "", None
             
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_名前", name)
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_数字", value)
@@ -1496,13 +1510,17 @@ elif st.session_state["page"] == "page3A":
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_説明", description)
             
             st.session_state["user_input"][f"推測規定値{i+1}_名前"] = st.text_input(f"推測規定値 {i+1} の名前", value=st.session_state["user_input"][f"推測規定値{i+1}_名前"])
-            st.session_state["user_input"][f"推測規定値{i+1}_数字"] = st.number_input(
-                f"推測規定値 {i+1} の数字",
-                min_value=0.0,
-                step=0.000001 if i == 1 else 0.01,
-                format=value_format,
-                value=st.session_state["user_input"][f"推測規定値{i+1}_数字"]
-            )
+            # 負荷率が数値でない場合（該当なしのメッセージ）を処理
+            if isinstance(value, str):
+                st.write(value)
+            else:
+                st.session_state["user_input"][f"推測規定値{i+1}_数字"] = st.number_input(
+                    f"推測規定値 {i+1} の数字",
+                    min_value=0.0,
+                    step=0.01,
+                    format=value_format,
+                    value=st.session_state["user_input"][f"推測規定値{i+1}_数字"]
+                )
             st.session_state["user_input"][f"推測規定値{i+1}_単位"] = st.text_input(f"推測規定値 {i+1} の単位", value=st.session_state["user_input"][f"推測規定値{i+1}_単位"])
             st.session_state["user_input"][f"推測規定値{i+1}_説明"] = st.text_area(f"推測規定値 {i+1} の説明", value=st.session_state["user_input"][f"推測規定値{i+1}_説明"])
 
