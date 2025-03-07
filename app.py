@@ -1654,7 +1654,7 @@ elif st.session_state["page"] == "page3B":
             elif i == 2:
                 name, unit = "負荷率", "%"
                 equipment = st.session_state["user_input"].get("設備", "")
-                value = load_factor_table.get(equipment, "負荷率表対応外、検索してください")
+                value = load_factor_table.get(equipment, 0.0)  # デフォルト値を0.0に設定
             else:
                 equipment = st.session_state["user_input"].get("設備", "")
                 name, unit, value = f"{equipment}平均容量", "kW", None
