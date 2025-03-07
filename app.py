@@ -1458,7 +1458,7 @@ elif st.session_state["page"] == "page3A":
         st.session_state["user_input"]["推測対象"] = select
         
         under = st.selectbox("小数点以下何桁まで推測しますか？", ["0", "1"])
-        st.session_state["user_input"]["小数点以下の桁数"] = int(under)
+        st.session_state["user_input"]["小数点以下の桁数"] = float(under)
         
         # **推測式**
         fuel = st.session_state["user_input"].get("燃料", "")
@@ -1614,7 +1614,7 @@ elif st.session_state["page"] == "page3B":
         st.session_state["user_input"]["推測対象"] = select
         
         under = st.selectbox("小数点以下何桁まで推測しますか？", ["0", "1"])
-        st.session_state["user_input"]["小数点以下の桁数"] = int(under)
+        st.session_state["user_input"]["小数点以下の桁数"] = float(under)
         
         # **推測式**
         fuel = st.session_state["user_input"].get("燃料", "")
@@ -1654,7 +1654,7 @@ elif st.session_state["page"] == "page3B":
             elif i == 2:
                 name, unit = "負荷率", "%"
                 equipment = st.session_state["user_input"].get("設備", "")
-                value = load_factor_table.get(equipment, 0.0)  # デフォルト値を0.0に設定
+                value = float(load_factor_table.get(equipment, 0.0)) # デフォルト値を0.0に設定
             else:
                 equipment = st.session_state["user_input"].get("設備", "")
                 name, unit, value = f"{equipment}平均容量", "kW", 1.0  # 初期値を1.0に設定
