@@ -853,7 +853,8 @@ elif st.session_state["page"] == "page2C":
                 key,
                 value=float(current_value),  # 確実に float にする
                 min_value=0.0,
-                step=1.0
+                step=1.0 if value_format == "%.2f" else 0.000001,
+                format=value_format  # 小数点以下6桁を強制適用
             )
 
             st.session_state["user_input"][f"規定値{i+1}_単位"] = st.text_input(f"規定値 {i+1} の単位", value=st.session_state["user_input"][f"規定値{i+1}_単位"])
