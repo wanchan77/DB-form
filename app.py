@@ -1614,9 +1614,9 @@ elif st.session_state["page"] == "page2F":
             st.session_state["user_input"].setdefault(f"規定値({name})の説明", "")
             st.session_state["user_input"][f"規定値({name})の説明"] = st.text_area(
                 f"規定値({name})の説明", value=st.session_state["user_input"][f"規定値({name})の説明"]
-)
+            )
 
-    )
+             
 
         # **追加の規定値 13個**
         for i in range(13):
