@@ -223,9 +223,9 @@ elif st.session_state["page"] == "page2A":
             st.number_input(
                 f"規定値({name})の数字",
                 min_value=0.0,
-                step=0.000001 if name == "電気の排出係数" else 0.01,
+                step=float(0.000001 if name == "電気の排出係数" else 0.01),
                 format="%.6f" if name == "電気の排出係数" else "%.2f",
-                value=value_display
+                value=float(value_display)
             )
             st.text_input(f"規定値({name})の単位", value=unit if value is not None else "")
             st.text_area(f"規定値({name})の説明", value=description if value is not None else "")
