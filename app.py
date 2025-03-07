@@ -1471,11 +1471,10 @@ elif st.session_state["page"] == "page2F":
     with st.form("input_form"):
 
         # **GHG削減量計算式**
-        default_ghg_formula = ""
-        st.session_state["user_input"].setdefault("GHG削減量計算式", default_ghg_formula)
+        st.session_state["user_input"].setdefault("GHG削減量計算式", "")
         st.session_state["user_input"]["GHG削減量計算式"] = st.text_area(
             "GHG削減量計算式",
-            value=st.session_state["user_input"]["GHG削減量計算式"]
+            value=st.session_state["user_input"].get("GHG削減量計算式", "")
         )
 
         # **コスト削減額計算式**
@@ -1492,25 +1491,24 @@ elif st.session_state["page"] == "page2F":
             emission_factor_str = f"{fuel}の排出係数<{emission_unit}>"
             fuel_price_str = f"{price_name}<{price_unit}>"
 
-        default_cost_formula = ""
-        st.session_state["user_input"].setdefault("コスト削減額計算式", default_cost_formula)
+        st.session_state["user_input"].setdefault("コスト削減額計算式", "")
         st.session_state["user_input"]["コスト削減額計算式"] = st.text_area(
             "コスト削減額計算式",
-            value=st.session_state["user_input"]["コスト削減額計算式"]
+            value=st.session_state["user_input"].get("コスト削減額計算式", "")
         )
 
         # **投資額計算式**
         st.session_state["user_input"].setdefault("投資額計算式", "")
         st.session_state["user_input"]["投資額計算式"] = st.text_area(
             "投資額計算式",
-            value=st.session_state["user_input"]["投資額計算式"]
+            value=st.session_state["user_input"].get("投資額計算式", "")
         )
 
         # **追加投資額計算式**
         st.session_state["user_input"].setdefault("追加投資額計算式", "")
         st.session_state["user_input"]["追加投資額計算式"] = st.text_area(
             "追加投資額計算式",
-            value=st.session_state["user_input"]["追加投資額計算式"]
+            value=st.session_state["user_input"].get("追加投資額計算式", "")
         )
 
         st.subheader("取得済みインプット")
