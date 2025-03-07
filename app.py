@@ -814,13 +814,13 @@ elif st.session_state["page"] == "page2C":
                 name, unit = f"新{neworold_scope_equipment}効率", "%"
                 value = 0.0
             elif i == 8:
-                name, value, unit, description = emission_factors.get(neworold_scope_fuel, ("", 0.0, "", ""))
+                name, value, unit, description = emission_factors.get(neworold_scope_fuel, ("", None, "", ""))
                 value_format = "%.6f"
             elif i == 9:
-                name, value, unit, description = fuel_prices.get(neworold_scope_fuel, ("", 0.0, "", ""))
+                name, value, unit, description = fuel_prices.get(neworold_scope_fuel, ("", None, "", ""))
                 value_format = "%.2f"
             elif i == 10:
-                name, value, unit, description = fuel_heat.get(neworold_scope_fuel, ("", 0.0, "", ""))
+                name, value, unit, description = fuel_heat.get(neworold_scope_fuel, ("", None, "", ""))
                 value_format = "%.2f"
             else:
                 name, value, unit, description = "", None, "", ""
@@ -832,12 +832,17 @@ elif st.session_state["page"] == "page2C":
             st.session_state["user_input"].setdefault(f"規定値{i+1}_説明", description)
             
             st.session_state["user_input"][f"規定値{i+1}_名前"] = st.text_input(f"規定値 {i+1} の名前", value=st.session_state["user_input"][f"規定値{i+1}_名前"])
-            st.session_state["user_input"][f"規定値{i+1}_数字"] = st.number_input(
-                f"規定値 {i+1} の数字",
-                min_value=0.0,
-                step=0.000001 if i == 1 else 0.01,
-                format=value_format,
-                value=st.session_state["user_input"][f"規定値{i+1}_数字"]
+            key = f"規定値{i+1}_数字"
+
+            # デフォルト値を設定し、型をfloatに統一
+            if key not in st.session_state["user_input"]:
+                st.session_state["user_input"][key] = 0.0  # floatに統一
+
+            st.session_state["user_input"][key] = st.number_input(
+                key,
+                value=float(st.session_state["user_input"][key]),  # 確実にfloatにする
+                min_value=0.0,  # ここはfloatのままでOK
+                step=1.0  # ここを `float(st.session_state["user_input"][key"])` に合わせる
             )
             st.session_state["user_input"][f"規定値{i+1}_単位"] = st.text_input(f"規定値 {i+1} の単位", value=st.session_state["user_input"][f"規定値{i+1}_単位"])
             st.session_state["user_input"][f"規定値{i+1}_説明"] = st.text_area(f"規定値 {i+1} の説明", value=st.session_state["user_input"][f"規定値{i+1}_説明"])
