@@ -167,7 +167,7 @@ elif st.session_state["page"] == "page2A":
         # 燃料取得
         fuel = st.session_state["user_input"].get("燃料", "")
 
-    # 事前定義された値
+        # 事前定義された値
         # 事前定義された値
         predefined_values = [
             ("電気の排出係数", 0.000434 if fuel == "電力" else None, "t-CO2/kWh", "・環境省令和5年：0.000434(t-CO2/kWh)\nhttps://ghg-santeikohyo.env.go.jp/files/calc/r05_coefficient_rev4.pdf\n\n・環境省：0.000488(t-CO2/kWh)\n環境省のエクセル" if fuel == "電力" else ""),
@@ -231,7 +231,7 @@ elif st.session_state["page"] == "page2A":
         # **推測値テンプレートの選択**
         prediction_template = st.selectbox("推測値のテンプレはどれを使用しますか？", ["1(容量推測)", "2(台数推測)", "3(自由入力)"])
         st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
-    submitted = st.form_submit_button("入力を確定")
+        submitted = st.form_submit_button("入力を確定")
 
     if submitted:
         st.session_state["previous_page"] = st.session_state["page"]  # 現在のページを保存
