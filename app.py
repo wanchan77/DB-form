@@ -883,7 +883,7 @@ elif st.session_state["page"] == "page2D":
     st.title("燃料転換系_2式入力")
     st.write(f"現在入力中の施策：{st.session_state['user_input']['設備']} {st.session_state['user_input']['施策名']} {st.session_state['user_input']['燃料']}")
 
-     # 燃料ごとの排出係数データ
+         # 燃料ごとの排出係数データ
     emission_factors = {
         "都市ガス": ("都市ガス{13A}の排出係数", 0.00223, "t-CO2/㎥", "https://www.env.go.jp/nature/info/onsen_ondanka/h23-2/ref02.pdf"),
         "LPG": ("LPGの排出係数", 0.0066, "t-CO2/㎥", "https://www.env.go.jp/nature/info/onsen_ondanka/h23-2/ref02.pdf"),
@@ -927,8 +927,44 @@ elif st.session_state["page"] == "page2D":
 
     with st.form("input_form"):
 
+        fuel = st.session_state["user_input"].get("燃料", "")
+        equipment = st.session_state["user_input"].get("設備", "")
+        neworold_scope_equipment = st.session_state["user_input"].get("neworold_scope_設備", "")
+        neworold_fuel = st.session_state["user_input"].get("neworold_scope_燃料", "")
+        if fuel == "電力":
+            emission_factor_str = "電気の排出係数<t-CO2/kWh>"
+            fuel_price_str = "電気料金<円/kWh>"
+            heat_str = "3.6<MJ/kWh>"
+        elif fuel == "都市ガス":
+            emission_factor_str = "都市ガス{13A}の排出係数<t-CO2/㎥>"
+            fuel_price_str = "都市ガス{13A}料金<円/㎥>"
+            heat_str = "都市ガス{13A}の熱量<MJ/㎥>"
+        else:
+            emission_name, _, emission_unit, _ = emission_factors.get(fuel, ("", 0, "", ""))
+            price_name, _, price_unit, _ = fuel_prices.get(fuel, ("", 0, "", ""))
+            heat_name, _, heat_unit, _ = fuel_heat.get(fuel, ("", 0, "", ""))
+            emission_factor_str = f"{fuel}の排出係数<{emission_unit}>"
+            fuel_price_str = f"{price_name}<{price_unit}>"
+            heat_str = f"{heat_name}<{heat_unit}>"
+
+        if neworold_fuel == "電力":
+            neworold_fuel_emission_factor_str = "電気の排出係数<t-CO2/kWh>"
+            neworold_fuel_fuel_price_str = "電気料金<円/kWh>"
+            neworold_heat_str = "3.6<MJ/kWh>"
+        elif neworold_fuel == "都市ガス":
+            neworold_fuel_emission_factor_str = "都市ガス{13A}の排出係数<t-CO2/㎥>"
+            neworold_fuel_fuel_price_str = "都市ガス{13A}料金<円/㎥>"
+            neworold_heat_str = "都市ガス{13A}の熱量<MJ/㎥>"
+        else:
+            neworold_fuel_emission_name, _, neworold_fuel_emission_unit, _ = emission_factors.get(neworold_fuel, ("", 0, "", ""))
+            neworold_fuel_price_name, _, neworold_fuel_price_unit, _ = fuel_prices.get(neworold_fuel, ("", 0, "", ""))
+            neworold_fuel_heat_name, _, neworold_fuel_heat_unit, _ = fuel_heat.get(neworold_fuel, ("", 0, "", ""))
+            neworold_fuel_emission_factor_str = f"{neworold_fuel}の排出係数<{neworold_fuel_emission_unit}>"
+            neworold_fuel_fuel_price_str = f"{neworold_fuel_price_name}<{neworold_fuel_price_unit}>"
+            neworold_heat_str = f"{neworold_fuel_heat_name}<{neworold_fuel_heat_unit}>"
+
         # **GHG削減量計算式**
-        default_ghg_formula = f"CO2削減量<t-CO2/年>={st.session_state['user_input'].get('設備', '')}{{{st.session_state['user_input'].get('燃料', '')}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>"
+        default_ghg_formula = f"CO2削減量<t-CO2/年>=(-1)×{neworold_scope_equipment}{{{neworold_fuel}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>÷{neworold_fuel_emission_factor_str}×{neworold_heat_str}×旧{neworold_scope_equipment}効率÷新{equipment}効率×{heat_str}×{emission_factor_str}"
         st.session_state["user_input"].setdefault("GHG削減量計算式", default_ghg_formula)
         st.session_state["user_input"]["GHG削減量計算式"] = st.text_area(
             "GHG削減量計算式",
@@ -936,20 +972,8 @@ elif st.session_state["page"] == "page2D":
         )
 
         # **コスト削減額計算式**
-        fuel = st.session_state["user_input"].get("燃料", "")
-        if fuel == "電力":
-            emission_factor_str = "電気の排出係数<t-CO2/kWh>"
-            fuel_price_str = "電気料金<円/kWh>"
-        elif fuel == "都市ガス":
-            emission_factor_str = "都市ガス{13A}の排出係数<t-CO2/㎥>"
-            fuel_price_str = "都市ガス{13A}料金<円/㎥>"
-        else:
-            emission_name, _, emission_unit, _ = emission_factors.get(fuel, ("", 0, "", ""))
-            price_name, _, price_unit, _ = fuel_prices.get(fuel, ("", 0, "", ""))
-            emission_factor_str = f"{fuel}の排出係数<{emission_unit}>"
-            fuel_price_str = f"{price_name}<{price_unit}>"
 
-        default_cost_formula = f"コスト削減額<円/年>={st.session_state['user_input'].get('設備', '')}{{{fuel}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>÷{emission_factor_str}×{fuel_price_str}"
+        default_cost_formula = f"コスト削減額<円/年>=(-1)×{neworold_scope_equipment}{{{neworold_fuel}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>÷{neworold_fuel_emission_factor_str}×{neworold_heat_str}×旧{neworold_scope_equipment}効率÷新{equipment}効率×{heat_str}×{fuel_price_str}"
         st.session_state["user_input"].setdefault("コスト削減額計算式", default_cost_formula)
         st.session_state["user_input"]["コスト削減額計算式"] = st.text_area(
             "コスト削減額計算式",
@@ -957,14 +981,14 @@ elif st.session_state["page"] == "page2D":
         )
 
         # **投資額計算式**
-        st.session_state["user_input"].setdefault("投資額計算式", "なし")
+        st.session_state["user_input"].setdefault("投資額計算式", "投資額=必要な代表値<単位>×対象設備の中で施策を実施する設備の割合<%>×代表値投資額原単位<円/単位>")
         st.session_state["user_input"]["投資額計算式"] = st.text_area(
             "投資額計算式",
             value=st.session_state["user_input"]["投資額計算式"]
         )
 
         # **追加投資額計算式**
-        st.session_state["user_input"].setdefault("追加投資額計算式", "なし")
+        st.session_state["user_input"].setdefault("追加投資額計算式", "追加投資額=必要な代表値<単位>×対象設備の中で施策を実施する設備の割合<%>×代表値追加投資額原単位<円/単位>")
         st.session_state["user_input"]["追加投資額計算式"] = st.text_area(
             "追加投資額計算式",
             value=st.session_state["user_input"]["追加投資額計算式"]
@@ -997,19 +1021,36 @@ elif st.session_state["page"] == "page2D":
             num_key = f"追加インプット{i+1}の数字"
             unit_key = f"追加インプット{i+1}の単位"
 
-            st.session_state["user_input"].setdefault(name_key, "対象設備の中で施策を実施する設備の割合" if i == 0 else "")
+            # 名前のデフォルト値を設定
+            if i == 0:
+                default_name = "対象設備の中で施策を実施する設備の割合"
+                default_unit = "%"
+                default_value = 50.0
+            elif i == 1:
+                default_name = "必要な代表値"
+                default_unit = "単位"
+                default_value = 0.0
+            else:
+                default_name = ""
+                default_unit = ""
+                default_value = 0.0
+
+            # セッションステートにデフォルト値を設定
+            st.session_state["user_input"].setdefault(name_key, default_name)
+            st.session_state["user_input"].setdefault(num_key, default_value)
+            st.session_state["user_input"].setdefault(unit_key, default_unit)
+
+            # 入力フォーム
             st.session_state["user_input"][name_key] = st.text_input(
                 name_key,
                 value=st.session_state["user_input"][name_key]
             )
-            st.session_state["user_input"].setdefault(num_key, 50.0 if i == 0 else 0.0)
             st.session_state["user_input"][num_key] = st.number_input(
                 num_key,
                 value=st.session_state["user_input"][num_key],
                 min_value=0.0,
                 step=1.0
             )
-            st.session_state["user_input"].setdefault(unit_key, "%" if i == 0 else "")
             st.session_state["user_input"][unit_key] = st.text_input(
                 unit_key,
                 value=st.session_state["user_input"][unit_key]
@@ -1059,16 +1100,41 @@ elif st.session_state["page"] == "page2D":
         for i in range(13):
             st.subheader(f"規定値 {i+1}")
             fuel = st.session_state["user_input"].get("燃料", "")
+            equipment = st.session_state["user_input"].get("設備", "")
+            neworold_scope_fuel = st.session_state["user_input"].get("neworold_scope_燃料", "")
+            neworold_scope_equipment = st.session_state["user_input"].get("neworold_scope_設備", "")
             value_format = "%.2f"
         
-            if i == 0:
-                name, unit = "省エネ率", "%"
-                value = None
-            elif i == 1:
+            if i == 1:
                 name, value, unit, description = emission_factors.get(fuel, ("", None, "", ""))
                 value_format = "%.6f"
             elif i == 2:
                 name, value, unit, description = fuel_prices.get(fuel, ("", None, "", ""))
+                value_format = "%.2f"
+            elif i == 3:
+                name, unit = "代表値投資額原単位", "円/単位"
+                value = 0.0
+            elif i == 4:
+                name, unit = "代表値追加投資額原単位", "円/単位"
+                value = 0.0
+            elif i == 5:
+                # `fuel_heat` から燃料の熱量を取得
+                name, value, unit, description = fuel_heat.get(fuel, ("", None, "", ""))
+                value_format = "%.2f"
+            elif i == 6:
+                name, unit = f"旧{equipment}効率", "%"
+                value = 0.0
+            elif i == 7:
+                name, unit = f"新{neworold_scope_equipment}効率", "%"
+                value = 0.0
+            elif i == 8:
+                name, value, unit, description = emission_factors.get(neworold_scope_fuel, ("", None, "", ""))
+                value_format = "%.6f"
+            elif i == 9:
+                name, value, unit, description = fuel_prices.get(neworold_scope_fuel, ("", None, "", ""))
+                value_format = "%.2f"
+            elif i == 10:
+                name, value, unit, description = fuel_heat.get(neworold_scope_fuel, ("", None, "", ""))
                 value_format = "%.2f"
             else:
                 name, value, unit, description = "", None, "", ""
@@ -1080,13 +1146,31 @@ elif st.session_state["page"] == "page2D":
             st.session_state["user_input"].setdefault(f"規定値{i+1}_説明", description)
             
             st.session_state["user_input"][f"規定値{i+1}_名前"] = st.text_input(f"規定値 {i+1} の名前", value=st.session_state["user_input"][f"規定値{i+1}_名前"])
-            st.session_state["user_input"][f"規定値{i+1}_数字"] = st.number_input(
-                f"規定値 {i+1} の数字",
+            key = f"規定値{i+1}_数字"
+
+            # セッションステートの値を取得し、型をチェック
+            current_value = st.session_state["user_input"].get(key, 0.0)
+
+            # 値が `None` なら 0.0 を設定
+            if current_value is None:
+                current_value = 0.0
+
+            # 文字列の場合は float に変換（空文字 `""` の場合は 0.0 にする）
+            elif isinstance(current_value, str):
+                try:
+                    current_value = float(current_value) if current_value.strip() else 0.0
+                except ValueError:
+                    current_value = 0.0  # 数値に変換できなければ 0.0 にする
+
+            # Streamlit の number_input に渡す
+            st.session_state["user_input"][key] = st.number_input(
+                key,
+                value=float(current_value),  # 確実に float にする
                 min_value=0.0,
-                step=0.000001 if i == 1 else 0.01,
-                format=value_format,
-                value=st.session_state["user_input"][f"規定値{i+1}_数字"]
+                step=1.0 if value_format == "%.2f" else 0.000001,
+                format=value_format  # 小数点以下6桁を強制適用
             )
+
             st.session_state["user_input"][f"規定値{i+1}_単位"] = st.text_input(f"規定値 {i+1} の単位", value=st.session_state["user_input"][f"規定値{i+1}_単位"])
             st.session_state["user_input"][f"規定値{i+1}_説明"] = st.text_area(f"規定値 {i+1} の説明", value=st.session_state["user_input"][f"規定値{i+1}_説明"])
 
@@ -1158,7 +1242,7 @@ elif st.session_state["page"] == "page2E":
     with st.form("input_form"):
 
         # **GHG削減量計算式**
-        default_ghg_formula = f"CO2削減量<t-CO2/年>={st.session_state['user_input'].get('設備', '')}{{{st.session_state['user_input'].get('燃料', '')}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>"
+        default_ghg_formula = ""
         st.session_state["user_input"].setdefault("GHG削減量計算式", default_ghg_formula)
         st.session_state["user_input"]["GHG削減量計算式"] = st.text_area(
             "GHG削減量計算式",
@@ -1179,22 +1263,21 @@ elif st.session_state["page"] == "page2E":
             emission_factor_str = f"{fuel}の排出係数<{emission_unit}>"
             fuel_price_str = f"{price_name}<{price_unit}>"
 
-        default_cost_formula = f"コスト削減額<円/年>={st.session_state['user_input'].get('設備', '')}{{{fuel}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>÷{emission_factor_str}×{fuel_price_str}"
-        st.session_state["user_input"].setdefault("コスト削減額計算式", default_cost_formula)
+        default_cost_formula = ""
         st.session_state["user_input"]["コスト削減額計算式"] = st.text_area(
             "コスト削減額計算式",
             value=st.session_state["user_input"]["コスト削減額計算式"]
         )
 
         # **投資額計算式**
-        st.session_state["user_input"].setdefault("投資額計算式", "なし")
+        st.session_state["user_input"].setdefault("投資額計算式", "")
         st.session_state["user_input"]["投資額計算式"] = st.text_area(
             "投資額計算式",
             value=st.session_state["user_input"]["投資額計算式"]
         )
 
         # **追加投資額計算式**
-        st.session_state["user_input"].setdefault("追加投資額計算式", "なし")
+        st.session_state["user_input"].setdefault("追加投資額計算式", "")
         st.session_state["user_input"]["追加投資額計算式"] = st.text_area(
             "追加投資額計算式",
             value=st.session_state["user_input"]["追加投資額計算式"]
@@ -1389,7 +1472,7 @@ elif st.session_state["page"] == "page2F":
     with st.form("input_form"):
 
         # **GHG削減量計算式**
-        default_ghg_formula = f"CO2削減量<t-CO2/年>={st.session_state['user_input'].get('設備', '')}{{{st.session_state['user_input'].get('燃料', '')}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>"
+        default_ghg_formula = ""
         st.session_state["user_input"].setdefault("GHG削減量計算式", default_ghg_formula)
         st.session_state["user_input"]["GHG削減量計算式"] = st.text_area(
             "GHG削減量計算式",
@@ -1410,7 +1493,7 @@ elif st.session_state["page"] == "page2F":
             emission_factor_str = f"{fuel}の排出係数<{emission_unit}>"
             fuel_price_str = f"{price_name}<{price_unit}>"
 
-        default_cost_formula = f"コスト削減額<円/年>={st.session_state['user_input'].get('設備', '')}{{{fuel}}}のCO2排出量<t-CO2/年>×対象設備の中で施策を実施する設備の割合<%>×省エネ率<%>÷{emission_factor_str}×{fuel_price_str}"
+        default_cost_formula = ""
         st.session_state["user_input"].setdefault("コスト削減額計算式", default_cost_formula)
         st.session_state["user_input"]["コスト削減額計算式"] = st.text_area(
             "コスト削減額計算式",
@@ -1418,34 +1501,34 @@ elif st.session_state["page"] == "page2F":
         )
 
         # **投資額計算式**
-        st.session_state["user_input"].setdefault("投資額計算式", "なし")
+        st.session_state["user_input"].setdefault("投資額計算式", "")
         st.session_state["user_input"]["投資額計算式"] = st.text_area(
             "投資額計算式",
             value=st.session_state["user_input"]["投資額計算式"]
         )
 
         # **追加投資額計算式**
-        st.session_state["user_input"].setdefault("追加投資額計算式", "なし")
+        st.session_state["user_input"].setdefault("追加投資額計算式", "")
         st.session_state["user_input"]["追加投資額計算式"] = st.text_area(
             "追加投資額計算式",
             value=st.session_state["user_input"]["追加投資額計算式"]
         )
 
         st.subheader("取得済みインプット")
-        default_input_name = f"{st.session_state['user_input'].get('設備', '')}{{{fuel}}}のCO2排出量"
+        default_input_name = ""
         st.session_state["user_input"].setdefault("取得済みインプットの名前", default_input_name)
         st.session_state["user_input"]["取得済みインプットの名前"] = st.text_input(
             "インプットの名前",
             value=st.session_state["user_input"]["取得済みインプットの名前"]
         )
-        st.session_state["user_input"].setdefault("取得済みインプットの数字", 200.0)
+        st.session_state["user_input"].setdefault("取得済みインプットの数字", 0.0)
         st.session_state["user_input"]["取得済みインプットの数字"] = st.number_input(
             "数字",
             value=st.session_state["user_input"]["取得済みインプットの数字"],
             min_value=0.0,
             step=1.0
         )
-        st.session_state["user_input"].setdefault("取得済みインプットの単位", "t-CO2")
+        st.session_state["user_input"].setdefault("取得済みインプットの単位", "")
         st.session_state["user_input"]["取得済みインプットの単位"] = st.text_input(
             "単位",
             value=st.session_state["user_input"]["取得済みインプットの単位"]
@@ -1458,19 +1541,19 @@ elif st.session_state["page"] == "page2F":
             num_key = f"追加インプット{i+1}の数字"
             unit_key = f"追加インプット{i+1}の単位"
 
-            st.session_state["user_input"].setdefault(name_key, "対象設備の中で施策を実施する設備の割合" if i == 0 else "")
+            st.session_state["user_input"].setdefault(name_key, "")
             st.session_state["user_input"][name_key] = st.text_input(
                 name_key,
                 value=st.session_state["user_input"][name_key]
             )
-            st.session_state["user_input"].setdefault(num_key, 50.0 if i == 0 else 0.0)
+            st.session_state["user_input"].setdefault(num_key,0.0)
             st.session_state["user_input"][num_key] = st.number_input(
                 num_key,
                 value=st.session_state["user_input"][num_key],
                 min_value=0.0,
                 step=1.0
             )
-            st.session_state["user_input"].setdefault(unit_key, "%" if i == 0 else "")
+            st.session_state["user_input"].setdefault(unit_key,"")
             st.session_state["user_input"][unit_key] = st.text_input(
                 unit_key,
                 value=st.session_state["user_input"][unit_key]
@@ -1493,10 +1576,10 @@ elif st.session_state["page"] == "page2F":
             value_display = value if fuel == "電力" or name not in ["電気の排出係数", "電気料金"] else 0.0
 
             # セッションステートにデフォルト値をセット
-            st.session_state["user_input"].setdefault(f"規定値({name})の名前", name_display)
-            st.session_state["user_input"].setdefault(f"規定値({name})の数字", float(value_display))
-            st.session_state["user_input"].setdefault(f"規定値({name})の単位", unit if value is not None else "")
-            st.session_state["user_input"].setdefault(f"規定値({name})の説明", description if value is not None else "")
+            st.session_state["user_input"].setdefault(f"規定値({name})の名前", "")
+            st.session_state["user_input"].setdefault(f"規定値({name})の数字", "")
+            st.session_state["user_input"].setdefault(f"規定値({name})の単位", "")
+            st.session_state["user_input"].setdefault(f"規定値({name})の説明", "")
 
             # ユーザー入力欄
             st.session_state["user_input"][f"規定値({name})の名前"] = st.text_input(
@@ -1521,19 +1604,8 @@ elif st.session_state["page"] == "page2F":
             st.subheader(f"規定値 {i+1}")
             fuel = st.session_state["user_input"].get("燃料", "")
             value_format = "%.2f"
-        
-            if i == 0:
-                name, unit = "省エネ率", "%"
-                value = None
-            elif i == 1:
-                name, value, unit, description = emission_factors.get(fuel, ("", None, "", ""))
-                value_format = "%.6f"
-            elif i == 2:
-                name, value, unit, description = fuel_prices.get(fuel, ("", None, "", ""))
-                value_format = "%.2f"
-            else:
-                name, value, unit, description = "", None, "", ""
-                value_format = "%.2f"
+            name, value, unit, description = "", 0.0 , "", ""
+            
             
             st.session_state["user_input"].setdefault(f"規定値{i+1}_名前", name)
             st.session_state["user_input"].setdefault(f"規定値{i+1}_数字", value)
