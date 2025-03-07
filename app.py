@@ -171,22 +171,23 @@ elif st.session_state["page"] == "page2A":
 
     for name, value, unit, description in predefined_values:
         st.subheader(f"規定値: {name}")
-        st.session_state["user_input"][f"規定値_{name}_名前"] = st.text_input(f"規定値 {name} の名前", value=name)
+        st.session_state["user_input"][f"規定値_{name}_名前"] = st.text_input(f"規定値({name})の名前", value=name)
         st.session_state["user_input"][f"規定値_{name}_数字"] = st.number_input(
-            f"規定値 {name} の数字",
+            f"規定値({name})の数字",
             min_value=0.0,
             step=0.000001 if name == "電気の排出係数" else 0.01,
             format="%.6f" if name == "電気の排出係数" else "%.2f",
             value=float(value)
         )
-        st.session_state["user_input"][f"規定値_{name}_単位"] = st.text_input(f"規定値 {name} の単位", value=unit)
-        st.session_state["user_input"][f"規定値_{name}_説明"] = st.text_area(f"規定値 {name} の説明", value=description)
+        st.session_state["user_input"][f"規定値_{name}_単位"] = st.text_input(f"規定値({name})の単位", value=unit)
+        st.session_state["user_input"][f"規定値_{name}_説明"] = st.text_area(f"規定値({name})の説明", value=description)
 
 
     # **追加の規定値 13個**
     for i in range(13):
         st.subheader(f"規定値 {i+1}")
         fuel = st.session_state["user_input"].get("燃料", "")
+        value_format = "%.2f"
     
         if i == 0:
             name, unit = "省エネ率", "%"
