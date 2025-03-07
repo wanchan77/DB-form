@@ -541,10 +541,10 @@ elif st.session_state["page"] == "page2B":
                 name, value, unit, description = fuel_prices.get(fuel, ("", None, "", ""))
                 value_format = "%.2f"
             elif i == 3:
-                name, value, unit = "代表値投資額原単位", "円/単位"
+                name, unit = "代表値投資額原単位", "円/単位"
                 value = 0.0
             elif i == 4:
-                name, value, unit = "代表値追加投資額原単位", "円/単位"
+                name, unit = "代表値追加投資額原単位", "円/単位"
                 value = 0.0
             elif i == 5:
                 # `fuel_heat` から燃料の熱量を取得
@@ -798,10 +798,10 @@ elif st.session_state["page"] == "page2C":
                 name, value, unit, description = fuel_prices.get(fuel, ("", None, "", ""))
                 value_format = "%.2f"
             elif i == 3:
-                name, value, unit = "代表値投資額原単位", "円/単位"
+                name, unit = "代表値投資額原単位", "円/単位"
                 value = 0.0
             elif i == 4:
-                name, value, unit = "代表値追加投資額原単位", "円/単位"
+                name, unit = "代表値追加投資額原単位", "円/単位"
                 value = 0.0
             elif i == 5:
                 # `fuel_heat` から燃料の熱量を取得
