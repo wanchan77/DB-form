@@ -235,7 +235,7 @@ elif st.session_state["page"] == "page2A":
         st.session_state["user_input"][num_key] = st.number_input(
             f"規定値({name})の数字",
             min_value=0.0,
-            step=0.000001 if name == "電気の排出係数" else 1.0 if name == "想定稼働年数" else 0.01,
+            step=float(0.000001 if name == "電気の排出係数" else 1.0 if name == "想定稼働年数" else 0.01),
             format="%.6f" if name == "電気の排出係数" else "%.0f" if name == "想定稼働年数" else "%.2f",
             value=st.session_state["user_input"][num_key]
         )
