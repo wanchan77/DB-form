@@ -219,7 +219,7 @@ elif st.session_state["page"] == "page2A":
             
             if fuel != "電力" and name in ["電気の排出係数", "電気料金"]:
                 name_display = "燃料が電力ではありません"
-                value = None
+                value = 0.0
             else:
                 name_display = name
             
