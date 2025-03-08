@@ -1808,7 +1808,7 @@ elif st.session_state["page"] == "page3A":
 
 
     if submitted:
-        next_page("summary")
+        next_page("description")
     if "previous_page" in st.session_state:
         if st.button("戻る"):
             next_page(st.session_state["previous_page"])
@@ -1960,7 +1960,7 @@ elif st.session_state["page"] == "page3B":
         submitted = st.form_submit_button("入力を確定")
     
     if submitted:
-        next_page("summary")
+        next_page("description")
     if "previous_page" in st.session_state:
         if st.button("戻る"):
             next_page(st.session_state["previous_page"])
@@ -2029,6 +2029,60 @@ elif st.session_state["page"] == "page3C":
                 value=st.session_state["user_input"].get(f"推測規定値{i+1}_説明", ""),
                 key=f"推測規定値{i+1}_説明"
             )
+        
+        submitted = st.form_submit_button("入力を確定")
+
+    if submitted:
+        next_page("description")
+    if "previous_page" in st.session_state:
+        if st.button("戻る"):
+            next_page(st.session_state["previous_page"])
+
+
+elif st.session_state["page"] == "description":
+    st.title("施策概要・専門家からの一言・適用条件入力")
+    st.write(f"現在入力中の施策：{st.session_state['user_input']['設備']} {st.session_state['user_input']['施策名']} {st.session_state['user_input']['燃料']}")
+    with st.form("input_form"):
+        st.session_state["user_input"] = st.session_state.get("user_input", {})
+        
+        # 施策概要
+        formula_template = st.session_state["user_input"].get("テンプレ", "")
+        measure_type = st.session_state["user_input"].get("施策の種類", "")
+        fuel = st.session_state["user_input"].get("燃料", "")
+        neworold_scope_fuel = st.session_state["user_input"].get("neworold_scope_燃料", "")
+        equipment = st.session_state["user_input"].get("設備", "")
+        neworold_scope_equipment = st.session_state["user_input"].get("neworold_scope_設備", "")
+        
+        default_summary = "施策概要記載準備中"
+        if formula_template == "1(運用改善系)" or (formula_template == "5(自由入力)" and measure_type == "1(運用改善系)"):
+            default_summary = f"前提(設備の解説など、必要な場合)\nユーザーのアクションで、施策の原理/仕組み(ないこともある)により、{equipment}の消費エネルギーとGHG排出量を削減することができます。"
+        elif formula_template == "2(設備投資系)" or (formula_template == "5(自由入力)" and measure_type == "2(設備投資系)"):
+            default_summary = f"前提(設備の解説など、必要な場合)\nユーザーのアクションで、施策の原理/仕組み(ないこともある)により、{equipment}の消費エネルギーとGHG排出量を削減することができます。\n設備更新の場合\n既存の{equipment}を高効率な{equipment}に更新することで、{equipment}の消費エネルギーとGHG排出量を削減することができます。{equipment}は年々省エネが進んでいるため、古い{equipment}と比較すると、最新の{equipment}は高効率になっています。"
+        elif formula_template == "3(燃料転換系_1)" or (formula_template == "5(自由入力)" and measure_type == "3(燃料転換系_1)"):
+            if neworold_scope_fuel == "電力":
+                default_summary = f"化石燃料である{fuel}を用いる{equipment}を電力を用いる{neworold_scope_equipment}に転換します。CO2フリー電力などと組み合わせて、GHG排出量0を達成できますが、コストが増える可能性が高いです。"
+            default_summary = f"{fuel}を用いる{equipment}をCO2排出量の少ない{neworold_scope_fuel}を用いる{neworold_scope_equipment}に転換することで、{equipment}のGHG排出量を削減することができます。"
+        elif formula_template == "4(燃料転換系_2)" or (formula_template == "5(自由入力)" and measure_type == "4(燃料転換系_2)"):
+            if neworold_scope_fuel == "電力":
+                default_summary = f"化石燃料である{neworold_scope_fuel}を用いる{neworold_scope_equipment}を電力を用いる{equipment}に転換します。CO2フリー電力などと組み合わせて、GHG排出量0を達成できますが、コストが増える可能性が高いです。"
+            default_summary = f"{neworold_scope_fuel}を用いる{neworold_scope_equipment}をCO2排出量の少ない{fuel}を用いる{equipment}に転換することで、{neworold_scope_equipment}のGHG排出量を削減することができます。"
+
+        st.session_state["user_input"].setdefault("施策概要", default_summary)
+        st.session_state["user_input"]["施策概要"] = st.text_area("施策概要", value=st.session_state["user_input"]["施策概要"])
+        
+        # 専門家からの一言
+        st.session_state["user_input"].setdefault("専門家からの一言", "専門家からの一言記載準備中")
+        st.session_state["user_input"]["専門家からの一言"] = st.text_area("専門家からの一言", value=st.session_state["user_input"]["専門家からの一言"])
+        
+        # 適用条件1
+        st.session_state["user_input"].setdefault("適用条件1", "適用条件記載準備中")
+        st.session_state["user_input"]["適用条件1"] = st.text_input("適用条件1", value=st.session_state["user_input"]["適用条件1"])
+        
+        # 適用条件2~4
+        for i in range(2, 5):
+            key = f"適用条件{i}"
+            st.session_state["user_input"].setdefault(key, "")
+            st.session_state["user_input"][key] = st.text_input(f"適用条件{i}", value=st.session_state["user_input"].get(key, ""))
         
         submitted = st.form_submit_button("入力を確定")
 
