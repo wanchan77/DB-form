@@ -1776,13 +1776,13 @@ elif st.session_state["page"] == "page3A":
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_単位", unit)
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_説明", description)
             
-            st.text_input(
+            st.session_state["user_input"][f"推測規定値 {i+1} の名前"] = st.text_input(
                 f"推測規定値 {i+1} の名前",
                 value=st.session_state["user_input"].get(f"推測規定値{i+1}_名前", ""),
                 key=f"推測規定値{i+1}_名前"
             )
             
-            st.number_input(
+            st.session_state["user_input"][f"推測規定値 {i+1} の数字"] = st.number_input(
                 f"推測規定値 {i+1} の数字",
                 min_value=0.0,
                 step=0.01,
@@ -1791,13 +1791,13 @@ elif st.session_state["page"] == "page3A":
                 key=f"推測規定値{i+1}_数字"
             )
             
-            st.text_input(
+            st.session_state["user_input"][f"推測規定値 {i+1} の単位"] = st.text_input(
                 f"推測規定値 {i+1} の単位",
                 value=st.session_state["user_input"].get(f"推測規定値{i+1}_単位", ""),
                 key=f"推測規定値{i+1}_単位"
             )
             
-            st.text_area(
+            st.session_state["user_input"][f"推測規定値 {i+1} の説明"] = st.text_area(
                 f"推測規定値 {i+1} の説明",
                 value=st.session_state["user_input"].get(f"推測規定値{i+1}_説明", ""),
                 key=f"推測規定値{i+1}_説明"
