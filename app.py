@@ -1770,6 +1770,20 @@ elif st.session_state["page"] == "page3A":
                 value = float(load_factor_table.get(equipment, 0.0)) # デフォルト値を0.0に設定
             else:
                 name, unit, value = "", "", 0.0  # 初期値を1.0に設定
+
+             # キーが存在しない場合の初期化
+            if f"推測規定値 {i+1} の名前" not in st.session_state["user_input"]:
+                st.session_state["user_input"][f"推測規定値 {i+1} の名前"] = name
+
+            if f"推測規定値 {i+1} の数字" not in st.session_state["user_input"]:
+                st.session_state["user_input"][f"推測規定値 {i+1} の数字"] = value
+
+            if f"推測規定値 {i+1} の単位" not in st.session_state["user_input"]:
+                st.session_state["user_input"][f"推測規定値 {i+1} の単位"] = unit
+
+            if f"推測規定値 {i+1} の説明" not in st.session_state["user_input"]:
+                st.session_state["user_input"][f"推測規定値 {i+1} の説明"] = description
+
             
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_名前", name)
             st.session_state["user_input"].setdefault(f"推測規定値{i+1}_数字", value)
