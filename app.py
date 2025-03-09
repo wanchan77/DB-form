@@ -1803,11 +1803,11 @@ elif st.session_state["page"] == "page3A":
                 key=f"推測規定値{i+1}_説明"
             )
         
-        submitted = st.form_submit_button("入力を確定")
+        submitted_3A = st.form_submit_button("推測値(容量)を確定")
 
 
 
-    if submitted:
+    if submitted_3A:
         next_page("description")
     if "previous_page" in st.session_state:
         if st.button("戻る"):
@@ -1957,9 +1957,9 @@ elif st.session_state["page"] == "page3B":
                 key=f"推測規定値{i+1}_説明"
             )
         
-        submitted = st.form_submit_button("入力を確定")
+        submitted_3B = st.form_submit_button("推測値(台数)を確定")
     
-    if submitted:
+    if submitted_3B:
         next_page("description")
     if "previous_page" in st.session_state:
         if st.button("戻る"):
@@ -2030,9 +2030,9 @@ elif st.session_state["page"] == "page3C":
                 key=f"推測規定値{i+1}_説明"
             )
         
-        submitted = st.form_submit_button("入力を確定")
+        submitted_3C = st.form_submit_button("推測値(自由入力)を確定")
 
-    if submitted:
+    if submitted_3C:
         next_page("description")
     if "previous_page" in st.session_state:
         if st.button("戻る"):
