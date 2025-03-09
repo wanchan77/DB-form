@@ -2043,7 +2043,9 @@ elif st.session_state["page"] == "description":
     st.title("施策概要・専門家からの一言・適用条件入力")
     st.write(f"現在入力中の施策：{st.session_state['user_input']['設備']} {st.session_state['user_input']['施策名']} {st.session_state['user_input']['燃料']}")
     with st.form("input_form"):
-        st.session_state["user_input"] = st.session_state.get("user_input", {})
+        if "user_input" not in st.session_state:
+            st.session_state["user_input"] = {}
+
         
         # 施策概要
         formula_template = st.session_state["user_input"].get("テンプレ", "")
