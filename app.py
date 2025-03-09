@@ -1960,7 +1960,19 @@ elif st.session_state["page"] == "page3B":
         submitted = st.form_submit_button("入力を確定")
     
     if submitted:
+        st.session_state["user_input"]["推測対象"] = select
+        st.session_state["user_input"]["小数点以下の桁数"] = float(under)
+        st.session_state["user_input"]["推測式"] = st.session_state["user_input"]["推測式"]
+
+        for i in range(4):
+            st.session_state["user_input"][f"推測規定値{i+1}_名前"] = st.session_state["user_input"].get(f"推測規定値{i+1}_名前", "")
+            st.session_state["user_input"][f"推測規定値{i+1}_数字"] = st.session_state["user_input"].get(f"推測規定値{i+1}_数字", 0.0)
+            st.session_state["user_input"][f"推測規定値{i+1}_単位"] = st.session_state["user_input"].get(f"推測規定値{i+1}_単位", "")
+            st.session_state["user_input"][f"推測規定値{i+1}_説明"] = st.session_state["user_input"].get(f"推測規定値{i+1}_説明", "")
+
+        st.write("フォーム送信後の user_input:", st.session_state["user_input"])  # デバッグ用
         next_page("description")
+
     if "previous_page" in st.session_state:
         if st.button("戻る"):
             next_page(st.session_state["previous_page"])
@@ -2075,21 +2087,20 @@ elif st.session_state["page"] == "description":
         st.session_state["user_input"]["専門家からの一言"] = st.text_area("専門家からの一言", value=st.session_state["user_input"]["専門家からの一言"])
         
         # 適用条件1
-        適用条件1 = st.text_input("適用条件1", value=st.session_state["user_input"].get("適用条件1", "適用条件記載準備中"))
-        st.session_state["user_input"]["適用条件1"] = 適用条件1
+        st.session_state["user_input"].setdefault("適用条件1", "適用条件記載準備中")
+        st.session_state["user_input"]["適用条件1"] = st.text_input("適用条件1", value=st.session_state["user_input"]["適用条件1"])
 
         # 適用条件2
-        適用条件2 = st.text_input("適用条件2", value=st.session_state["user_input"].get("適用条件2", ""))
-        st.session_state["user_input"]["適用条件2"] = 適用条件2
+        st.session_state["user_input"].setdefault("適用条件2", "")
+        st.session_state["user_input"]["適用条件2"] = st.text_input("適用条件2", value=st.session_state["user_input"]["適用条件2"])
 
         # 適用条件3
-        適用条件3 = st.text_input("適用条件3", value=st.session_state["user_input"].get("適用条件3", ""))
-        st.session_state["user_input"]["適用条件3"] = 適用条件3
+        st.session_state["user_input"].setdefault("適用条件3", "")
+        st.session_state["user_input"]["適用条件3"] = st.text_input("適用条件3", value=st.session_state["user_input"]["適用条件3"])
 
         # 適用条件4
-        適用条件4 = st.text_input("適用条件4", value=st.session_state["user_input"].get("適用条件4", ""))
-        st.session_state["user_input"]["適用条件4"] = 適用条件4
-
+        st.session_state["user_input"].setdefault("適用条件4", "")
+        st.session_state["user_input"]["適用条件4"] = st.text_input("適用条件4", value=st.session_state["user_input"]["適用条件4"])
         
         # # 適用条件2~4
         # for i in range(2, 5):
