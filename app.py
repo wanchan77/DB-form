@@ -1960,19 +1960,7 @@ elif st.session_state["page"] == "page3B":
         submitted = st.form_submit_button("入力を確定")
     
     if submitted:
-        st.session_state["user_input"]["推測対象"] = select
-        st.session_state["user_input"]["小数点以下の桁数"] = float(under)
-        st.session_state["user_input"]["推測式"] = st.session_state["user_input"]["推測式"]
-
-        for i in range(4):
-            st.session_state["user_input"][f"推測規定値{i+1}_名前"] = st.session_state["user_input"].get(f"推測規定値{i+1}_名前", "")
-            st.session_state["user_input"][f"推測規定値{i+1}_数字"] = st.session_state["user_input"].get(f"推測規定値{i+1}_数字", 0.0)
-            st.session_state["user_input"][f"推測規定値{i+1}_単位"] = st.session_state["user_input"].get(f"推測規定値{i+1}_単位", "")
-            st.session_state["user_input"][f"推測規定値{i+1}_説明"] = st.session_state["user_input"].get(f"推測規定値{i+1}_説明", "")
-
-        st.write("フォーム送信後の user_input:", st.session_state["user_input"])  # デバッグ用
         next_page("description")
-
     if "previous_page" in st.session_state:
         if st.button("戻る"):
             next_page(st.session_state["previous_page"])
@@ -2055,7 +2043,7 @@ elif st.session_state["page"] == "description":
     st.title("施策概要・専門家からの一言・適用条件入力")
     st.write(f"現在入力中の施策：{st.session_state['user_input']['設備']} {st.session_state['user_input']['施策名']} {st.session_state['user_input']['燃料']}")
     with st.form("input_form"):
-        st.session_state["user_input"] = st.session_state.get("user_input", {})
+        # st.session_state["user_input"] = st.session_state.get("user_input", {})
         
         # 施策概要
         formula_template = st.session_state["user_input"].get("テンプレ", "")
@@ -2108,9 +2096,9 @@ elif st.session_state["page"] == "description":
         #     st.session_state["user_input"].setdefault(key, "")
         #     st.session_state["user_input"][key] = st.text_input(f"適用条件{i}", value=st.session_state["user_input"].get(key, ""))
         
-        submitted = st.form_submit_button("入力を確定")
+        submitted_description = st.form_submit_button("送信")
 
-    if submitted:
+    if submitted_description:
         next_page("summary")
     if "previous_page" in st.session_state:
         if st.button("戻る"):
