@@ -2043,9 +2043,7 @@ elif st.session_state["page"] == "description":
     st.title("施策概要・専門家からの一言・適用条件入力")
     st.write(f"現在入力中の施策：{st.session_state['user_input']['設備']} {st.session_state['user_input']['施策名']} {st.session_state['user_input']['燃料']}")
     with st.form("input_form"):
-        if "user_input" not in st.session_state:
-            st.session_state["user_input"] = {}
-
+        st.session_state["user_input"] = st.session_state.get("user_input", {})
         
         # 施策概要
         formula_template = st.session_state["user_input"].get("テンプレ", "")
@@ -2077,20 +2075,21 @@ elif st.session_state["page"] == "description":
         st.session_state["user_input"]["専門家からの一言"] = st.text_area("専門家からの一言", value=st.session_state["user_input"]["専門家からの一言"])
         
         # 適用条件1
-        st.session_state["user_input"].setdefault("適用条件1", "適用条件記載準備中")
-        st.session_state["user_input"]["適用条件1"] = st.text_input("適用条件1", value=st.session_state["user_input"]["適用条件1"])
+        適用条件1 = st.text_input("適用条件1", value=st.session_state["user_input"].get("適用条件1", "適用条件記載準備中"))
+        st.session_state["user_input"]["適用条件1"] = 適用条件1
 
         # 適用条件2
-        st.session_state["user_input"].setdefault("適用条件2", "")
-        st.session_state["user_input"]["適用条件2"] = st.text_input("適用条件2", value=st.session_state["user_input"]["適用条件2"])
+        適用条件2 = st.text_input("適用条件2", value=st.session_state["user_input"].get("適用条件2", ""))
+        st.session_state["user_input"]["適用条件2"] = 適用条件2
 
         # 適用条件3
-        st.session_state["user_input"].setdefault("適用条件3", "")
-        st.session_state["user_input"]["適用条件3"] = st.text_input("適用条件3", value=st.session_state["user_input"]["適用条件3"])
+        適用条件3 = st.text_input("適用条件3", value=st.session_state["user_input"].get("適用条件3", ""))
+        st.session_state["user_input"]["適用条件3"] = 適用条件3
 
         # 適用条件4
-        st.session_state["user_input"].setdefault("適用条件4", "")
-        st.session_state["user_input"]["適用条件4"] = st.text_input("適用条件4", value=st.session_state["user_input"]["適用条件4"])
+        適用条件4 = st.text_input("適用条件4", value=st.session_state["user_input"].get("適用条件4", ""))
+        st.session_state["user_input"]["適用条件4"] = 適用条件4
+
         
         # # 適用条件2~4
         # for i in range(2, 5):
