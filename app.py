@@ -483,7 +483,13 @@ elif st.session_state["page"] == "page2A":
             with col2:
                 if st.button("問題なしで次へ進む"):
                     st.session_state["force_next"] = True
-                    st.rerun()
+                    st.session_state["previous_page"] = st.session_state["page"]
+                    if prediction_template.startswith("1"):
+                        next_page("page3A")
+                    elif prediction_template.startswith("2"):
+                        next_page("page3B")
+                    else:
+                        next_page("page3C")
         else:
             st.session_state["force_next"] = False
             st.session_state["previous_page"] = st.session_state["page"]
