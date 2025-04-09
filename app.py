@@ -255,6 +255,19 @@ elif st.session_state["page"] == "page2A":
     "揮発油": ("揮発油の熱量", 34.6, "MJ/l", "https://www.ecofukuoka.jp/image/custom/data/santei/hatunetu.pdf")
     }
 
+    # ページ遷移フラグによる制御
+    if st.session_state.get("force_next", False):
+        st.info("force_next is True: ページ遷移を実行します")
+        st.session_state["force_next"] = False
+        st.session_state["previous_page"] = st.session_state["page"]
+        prediction_template = st.session_state["user_input"].get("推測値のテンプレ", "")
+        if prediction_template.startswith("1"):
+            next_page("page3A")
+        elif prediction_template.startswith("2"):
+            next_page("page3B")
+        else:
+            next_page("page3C")
+
     with st.form("input_form"):
 
         # **GHG削減量計算式**
@@ -429,19 +442,6 @@ elif st.session_state["page"] == "page2A":
         st.session_state["user_input"].setdefault("推測値のテンプレ", prediction_template)
         st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
         submitted = st.form_submit_button("入力を確定")
-
-    # ページ遷移フラグによる制御
-    if st.session_state.get("force_next", False):
-        st.info("force_next is True: ページ遷移を実行します")
-        st.session_state["force_next"] = False
-        st.session_state["previous_page"] = st.session_state["page"]
-        prediction_template = st.session_state["user_input"].get("推測値のテンプレ", "")
-        if prediction_template.startswith("1"):
-            next_page("page3A")
-        elif prediction_template.startswith("2"):
-            next_page("page3B")
-        else:
-            next_page("page3C")
 
     # 通常のチェック処理
     if submitted:
