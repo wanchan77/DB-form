@@ -430,19 +430,29 @@ elif st.session_state["page"] == "page2A":
         st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
         submitted = st.form_submit_button("入力を確定")
 
-    if submitted:
-    # 入力確認のための全インプット名を収集
-        input_names = [
-            st.session_state["user_input"].get("取得済みインプットの名前", "")
-        ]
-        for i in range(6):
-            input_names.append(st.session_state["user_input"].get(f"追加インプット{i+1}の名前", ""))
+    if submitted or st.session_state.get("force_next", False):
+        # 入力確認のための全インプット名を収集（ラベル付き）
+        input_names = []
+        input_labels = []
 
-        # 規定値の名前も追加（最大16個: 通常3個 + 追加13個）
+        name = st.session_state["user_input"].get("取得済みインプットの名前", "")
+        input_names.append(name)
+        input_labels.append(f"インプット: {name}")
+
+        for i in range(6):
+            name = st.session_state["user_input"].get(f"追加インプット{i+1}の名前", "")
+            input_names.append(name)
+            input_labels.append(f"インプット{i+1}: {name}")
+
         for i in range(3):
-            input_names.append(st.session_state["user_input"].get(f"規定値({['電気の排出係数','電気料金','想定稼働年数'][i]})の名前", ""))
+            name = st.session_state["user_input"].get(f"規定値({['電気の排出係数','電気料金','想定稼働年数'][i]})の名前", "")
+            input_names.append(name)
+            input_labels.append(f"規定値({['電気の排出係数','電気料金','想定稼働年数'][i]}): {name}")
+
         for i in range(13):
-            input_names.append(st.session_state["user_input"].get(f"規定値{i+1}_名前", ""))
+            name = st.session_state["user_input"].get(f"規定値{i+1}_名前", "")
+            input_names.append(name)
+            input_labels.append(f"規定値{i+1}: {name}")
 
         # 計算式の文字列を取得
         formula_texts = [
@@ -454,14 +464,28 @@ elif st.session_state["page"] == "page2A":
 
         # 各インプット名が少なくとも1つの式に含まれているかチェック
         missing_inputs = []
-        for name in input_names:
+        missing_labels = []
+        for name, label in zip(input_names, input_labels):
             if name and not any(name in formula for formula in formula_texts):
                 missing_inputs.append(name)
+                missing_labels.append(label)
 
         # 不足がある場合エラーメッセージを表示し遷移を防止
-        if missing_inputs:
-            st.error("以下のインプットまたは規定値がいずれの計算式にも使用されていません: " + ", ".join(missing_inputs))
+        if missing_inputs and not st.session_state.get("force_next", False):
+            st.error("以下のインプットまたは規定値がいずれの計算式にも使用されていません:")
+            for label in missing_labels:
+                st.markdown(f"- {label}")
+
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("修正して再チェック"):
+                    st.rerun()
+            with col2:
+                if st.button("問題なしで次へ進む"):
+                    st.session_state["force_next"] = True
+                    st.rerun()
         else:
+            st.session_state["force_next"] = False
             st.session_state["previous_page"] = st.session_state["page"]
             if prediction_template.startswith("1"):
                 next_page("page3A")
@@ -469,9 +493,6 @@ elif st.session_state["page"] == "page2A":
                 next_page("page3B")
             else:
                 next_page("page3C")
-
-    if st.button("戻る"):
-        next_page("page1")
 
     # if st.button("完了"):
     #     next_page("summary")
