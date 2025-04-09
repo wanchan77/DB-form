@@ -430,18 +430,18 @@ elif st.session_state["page"] == "page2A":
         st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
         col1, col2 = st.columns(2)
         with col1:
-            check_errors = st.form_submit_button("エラーチェック")
-        with col2:
             submitted = st.form_submit_button("入力を確定")
+        with col2:
+            check_errors = st.form_submit_button("エラーチェック")
     
         # st.session_state 初期化（1回目だけ）
-    if "check_count" not in st.session_state:
-        st.session_state["check_count"] = 0
+    if "check_count_2A" not in st.session_state:
+        st.session_state["check_count_2A"] = 0
     
 
     # ▼ エラーチェックボタンが押されたときの処理
     if check_errors:
-        st.session_state["check_count"] += 1
+        st.session_state["check_count_2A"] += 1
 
         # 入力確認のための全インプット名を収集（ラベル付き）
         input_names = []
@@ -483,12 +483,12 @@ elif st.session_state["page"] == "page2A":
                 missing_labels.append(label)
 
         if missing_inputs:
-            st.warning(f"🔍 チェック結果（{st.session_state['check_count']} 回目）:")
+            st.warning(f"🔍 チェック結果（{st.session_state['check_count_2A']} 回目）:")
             st.error("以下のインプットまたは規定値がいずれの計算式にも使用されていません:")
             for label in missing_labels:
                 st.markdown(f"- {label}")
         else:
-            st.success(f"✅ 全てのインプットが計算式に含まれています！（{st.session_state['check_count']} 回チェック済み）")
+            st.success(f"✅ 全てのインプットが計算式に含まれています！（{st.session_state['check_count_2A']} 回チェック済み）")
 
     # ▼ 入力確定ボタンが押されたときの処理（無条件でページ遷移）
     if submitted:
