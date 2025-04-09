@@ -430,24 +430,6 @@ elif st.session_state["page"] == "page2A":
         st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
         submitted = st.form_submit_button("入力を確定")
     
-       # 1. force_next が True のとき、"次ページ" を記録しておく（例: next_target_page）
-    if st.session_state.get("force_next", False):
-        st.info("force_next is True: ページ遷移を実行します")
-        prediction_template = st.session_state["user_input"].get("推測値のテンプレ", "")
-        if prediction_template.startswith("1"):
-            st.session_state["next_target_page"] = "page3A"
-        elif prediction_template.startswith("2"):
-            st.session_state["next_target_page"] = "page3B"
-        else:
-            st.session_state["next_target_page"] = "page3C"
-
-        # ページ遷移前に force_next フラグだけリセットして rerun
-        st.session_state["force_next"] = False
-        st.rerun()
-    # 2. next_target_page があれば遷移（これは rerun 後に効く）
-    if "next_target_page" in st.session_state:
-        next_page(st.session_state["next_target_page"])
-        del st.session_state["next_target_page"]
 
     # 通常のチェック処理
     if submitted:
@@ -503,8 +485,14 @@ elif st.session_state["page"] == "page2A":
                     st.rerun()
             with col2:
                 if st.button("問題なしで次へ進む"):
-                    st.session_state["force_next"] = True
-                    st.rerun()
+                    prediction_template = st.session_state["user_input"].get("推測値のテンプレ", "")
+                    st.session_state["previous_page"] = st.session_state["page"]
+                    if prediction_template.startswith("1"):
+                        next_page("page3A")
+                    elif prediction_template.startswith("2"):
+                        next_page("page3B")
+                    else:
+                        next_page("page3C")
         else:
             st.session_state["previous_page"] = st.session_state["page"]
             if prediction_template.startswith("1"):
@@ -513,6 +501,7 @@ elif st.session_state["page"] == "page2A":
                 next_page("page3B")
             else:
                 next_page("page3C")
+
 
 
 elif st.session_state["page"] == "page2B":
