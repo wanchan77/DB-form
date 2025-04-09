@@ -430,7 +430,19 @@ elif st.session_state["page"] == "page2A":
         st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
         submitted = st.form_submit_button("入力を確定")
 
-    if submitted or st.session_state.get("force_next", False):
+    # ページ遷移フラグによる制御
+    if st.session_state.get("force_next", False):
+        st.session_state["force_next"] = False
+        st.session_state["previous_page"] = st.session_state["page"]
+        if prediction_template.startswith("1"):
+            next_page("page3A")
+        elif prediction_template.startswith("2"):
+            next_page("page3B")
+        else:
+            next_page("page3C")
+
+    # 通常のチェック処理
+    if submitted:
         # 入力確認のための全インプット名を収集（ラベル付き）
         input_names = []
         input_labels = []
@@ -445,9 +457,10 @@ elif st.session_state["page"] == "page2A":
             input_labels.append(f"インプット{i+1}: {name}")
 
         for i in range(3):
-            name = st.session_state["user_input"].get(f"規定値({['電気の排出係数','電気料金','想定稼働年数'][i]})の名前", "")
+            name = st.session_state["user_input"].get(f"規定値({['電気の排出係数', '電気料金', '想定稼働年数'][i]})の名前", "")
             input_names.append(name)
-            input_labels.append(f"規定値({['電気の排出係数','電気料金','想定稼働年数'][i]}): {name}")
+            input_labels.append(f"規定値({['電気の排出係数', '電気料金', '想定稼働年数'][i]}): {name}")
+            input_labels.append(f"規定値({['電気の排出係数','電気料金',"想定稼働年数"][i]}): {name}")
 
         for i in range(13):
             name = st.session_state["user_input"].get(f"規定値{i+1}_名前", "")
@@ -471,7 +484,7 @@ elif st.session_state["page"] == "page2A":
                 missing_labels.append(label)
 
         # 不足がある場合エラーメッセージを表示し遷移を防止
-        if missing_inputs and not st.session_state.get("force_next", False):
+        if missing_inputs:
             st.error("以下のインプットまたは規定値がいずれの計算式にも使用されていません:")
             for label in missing_labels:
                 st.markdown(f"- {label}")
@@ -483,17 +496,8 @@ elif st.session_state["page"] == "page2A":
             with col2:
                 if st.button("問題なしで次へ進む"):
                     st.session_state["force_next"] = True
-                    st.session_state["previous_page"] = st.session_state["page"]
-                    # force_next を False にリセットしてからページ遷移
-                    st.session_state["force_next"] = False
-                    if prediction_template.startswith("1"):
-                        next_page("page3A")
-                    elif prediction_template.startswith("2"):
-                        next_page("page3B")
-                    else:
-                        next_page("page3C")
+                    st.rerun()
         else:
-            st.session_state["force_next"] = False
             st.session_state["previous_page"] = st.session_state["page"]
             if prediction_template.startswith("1"):
                 next_page("page3A")
@@ -502,16 +506,6 @@ elif st.session_state["page"] == "page2A":
             else:
                 next_page("page3C")
 
-    # フォームの外でページ遷移を実行
-    if st.session_state.get("force_next", False):
-        st.session_state["force_next"] = False
-        st.session_state["previous_page"] = st.session_state["page"]
-        if prediction_template.startswith("1"):
-            next_page("page3A")
-        elif prediction_template.startswith("2"):
-            next_page("page3B")
-        else:
-            next_page("page3C")
 
 elif st.session_state["page"] == "page2B":
     st.title("設備投資系式入力")
