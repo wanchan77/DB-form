@@ -432,6 +432,7 @@ elif st.session_state["page"] == "page2A":
 
     # ページ遷移フラグによる制御
     if st.session_state.get("force_next", False):
+        st.info("force_next is True: ページ遷移を実行します")
         st.session_state["force_next"] = False
         st.session_state["previous_page"] = st.session_state["page"]
         if prediction_template.startswith("1"):
