@@ -255,25 +255,6 @@ elif st.session_state["page"] == "page2A":
     "揮発油": ("揮発油の熱量", 34.6, "MJ/l", "https://www.ecofukuoka.jp/image/custom/data/santei/hatunetu.pdf")
     }
 
-   # 1. force_next が True のとき、"次ページ" を記録しておく（例: next_target_page）
-    if st.session_state.get("force_next", False):
-        st.info("force_next is True: ページ遷移を実行します")
-        prediction_template = st.session_state["user_input"].get("推測値のテンプレ", "")
-        if prediction_template.startswith("1"):
-            st.session_state["next_target_page"] = "page3A"
-        elif prediction_template.startswith("2"):
-            st.session_state["next_target_page"] = "page3B"
-        else:
-            st.session_state["next_target_page"] = "page3C"
-
-        # ページ遷移前に force_next フラグだけリセットして rerun
-        st.session_state["force_next"] = False
-        st.rerun()
-    # 2. next_target_page があれば遷移（これは rerun 後に効く）
-    if "next_target_page" in st.session_state:
-        next_page(st.session_state["next_target_page"])
-        del st.session_state["next_target_page"]
-
     with st.form("input_form"):
 
         # **GHG削減量計算式**
@@ -448,6 +429,25 @@ elif st.session_state["page"] == "page2A":
         st.session_state["user_input"].setdefault("推測値のテンプレ", prediction_template)
         st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
         submitted = st.form_submit_button("入力を確定")
+    
+       # 1. force_next が True のとき、"次ページ" を記録しておく（例: next_target_page）
+    if st.session_state.get("force_next", False):
+        st.info("force_next is True: ページ遷移を実行します")
+        prediction_template = st.session_state["user_input"].get("推測値のテンプレ", "")
+        if prediction_template.startswith("1"):
+            st.session_state["next_target_page"] = "page3A"
+        elif prediction_template.startswith("2"):
+            st.session_state["next_target_page"] = "page3B"
+        else:
+            st.session_state["next_target_page"] = "page3C"
+
+        # ページ遷移前に force_next フラグだけリセットして rerun
+        st.session_state["force_next"] = False
+        st.rerun()
+    # 2. next_target_page があれば遷移（これは rerun 後に効く）
+    if "next_target_page" in st.session_state:
+        next_page(st.session_state["next_target_page"])
+        del st.session_state["next_target_page"]
 
     # 通常のチェック処理
     if submitted:
