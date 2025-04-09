@@ -431,13 +431,44 @@ elif st.session_state["page"] == "page2A":
         submitted = st.form_submit_button("入力を確定")
 
     if submitted:
-        st.session_state["previous_page"] = st.session_state["page"]  # 現在のページを保存
-        if prediction_template.startswith("1"):
-            next_page("page3A")
-        elif prediction_template.startswith("2"):
-            next_page("page3B")
+    # 入力確認のための全インプット名を収集
+        input_names = [
+            st.session_state["user_input"].get("取得済みインプットの名前", "")
+        ]
+        for i in range(6):
+            input_names.append(st.session_state["user_input"].get(f"追加インプット{i+1}の名前", ""))
+
+        # 規定値の名前も追加（最大16個: 通常3個 + 追加13個）
+        for i in range(3):
+            input_names.append(st.session_state["user_input"].get(f"規定値({['電気の排出係数','電気料金','想定稼働年数'][i]})の名前", ""))
+        for i in range(13):
+            input_names.append(st.session_state["user_input"].get(f"規定値{i+1}_名前", ""))
+
+        # 計算式の文字列を取得
+        formula_texts = [
+            st.session_state["user_input"].get("GHG削減量計算式", ""),
+            st.session_state["user_input"].get("コスト削減額計算式", ""),
+            st.session_state["user_input"].get("投資額計算式", ""),
+            st.session_state["user_input"].get("追加投資額計算式", "")
+        ]
+
+        # 各インプット名が少なくとも1つの式に含まれているかチェック
+        missing_inputs = []
+        for name in input_names:
+            if name and not any(name in formula for formula in formula_texts):
+                missing_inputs.append(name)
+
+        # 不足がある場合エラーメッセージを表示し遷移を防止
+        if missing_inputs:
+            st.error("以下のインプットまたは規定値がいずれの計算式にも使用されていません: " + ", ".join(missing_inputs))
         else:
-            next_page("page3C")
+            st.session_state["previous_page"] = st.session_state["page"]
+            if prediction_template.startswith("1"):
+                next_page("page3A")
+            elif prediction_template.startswith("2"):
+                next_page("page3B")
+            else:
+                next_page("page3C")
 
     if st.button("戻る"):
         next_page("page1")
