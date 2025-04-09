@@ -435,6 +435,7 @@ elif st.session_state["page"] == "page2A":
         st.info("force_next is True: ページ遷移を実行します")
         st.session_state["force_next"] = False
         st.session_state["previous_page"] = st.session_state["page"]
+        prediction_template = st.session_state["user_input"].get("推測値のテンプレ", "")
         if prediction_template.startswith("1"):
             next_page("page3A")
         elif prediction_template.startswith("2"):
