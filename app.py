@@ -428,11 +428,21 @@ elif st.session_state["page"] == "page2A":
         prediction_template = st.selectbox("推測値のテンプレはどれを使用しますか？", ["1(容量推測)", "2(台数推測)", "3(自由入力)"])
         st.session_state["user_input"].setdefault("推測値のテンプレ", prediction_template)
         st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
-        submitted = st.form_submit_button("入力を確定")
+        col1, col2 = st.columns(2)
+        with col1:
+            check_errors = st.form_submit_button("エラーチェック")
+        with col2:
+            submitted = st.form_submit_button("入力を確定")
+    
+        # st.session_state 初期化（1回目だけ）
+    if "check_count" not in st.session_state:
+        st.session_state["check_count"] = 0
     
 
-    # 通常のチェック処理
-    if submitted:
+    # ▼ エラーチェックボタンが押されたときの処理
+    if check_errors:
+        st.session_state["check_count"] += 1
+
         # 入力確認のための全インプット名を収集（ラベル付き）
         input_names = []
         input_labels = []
@@ -447,17 +457,16 @@ elif st.session_state["page"] == "page2A":
             input_labels.append(f"インプット{i+1}: {name}")
 
         for i in range(3):
-            name = st.session_state["user_input"].get(f"規定値({['電気の排出係数', '電気料金', '想定稼働年数'][i]})の名前", "")
+            key = ['電気の排出係数', '電気料金', '想定稼働年数'][i]
+            name = st.session_state["user_input"].get(f"規定値({key})の名前", "")
             input_names.append(name)
-            input_labels.append(f"規定値({['電気の排出係数', '電気料金', '想定稼働年数'][i]}): {name}")
-            input_labels.append(f"規定値({['電気の排出係数','電気料金',"想定稼働年数"][i]}): {name}")
+            input_labels.append(f"規定値({key}): {name}")
 
         for i in range(13):
             name = st.session_state["user_input"].get(f"規定値{i+1}_名前", "")
             input_names.append(name)
             input_labels.append(f"規定値{i+1}: {name}")
 
-        # 計算式の文字列を取得
         formula_texts = [
             st.session_state["user_input"].get("GHG削減量計算式", ""),
             st.session_state["user_input"].get("コスト削減額計算式", ""),
@@ -465,7 +474,7 @@ elif st.session_state["page"] == "page2A":
             st.session_state["user_input"].get("追加投資額計算式", "")
         ]
 
-        # 各インプット名が少なくとも1つの式に含まれているかチェック
+        # チェック処理
         missing_inputs = []
         missing_labels = []
         for name, label in zip(input_names, input_labels):
@@ -473,34 +482,25 @@ elif st.session_state["page"] == "page2A":
                 missing_inputs.append(name)
                 missing_labels.append(label)
 
-        # 不足がある場合エラーメッセージを表示し遷移を防止
         if missing_inputs:
+            st.warning(f"🔍 チェック結果（{st.session_state['check_count']} 回目）:")
             st.error("以下のインプットまたは規定値がいずれの計算式にも使用されていません:")
             for label in missing_labels:
                 st.markdown(f"- {label}")
-
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.button("修正して再チェック"):
-                    st.rerun()
-            with col2:
-                if st.button("問題なしで次へ進む"):
-                    prediction_template = st.session_state["user_input"].get("推測値のテンプレ", "")
-                    st.session_state["previous_page"] = st.session_state["page"]
-                    if prediction_template.startswith("1"):
-                        next_page("page3A")
-                    elif prediction_template.startswith("2"):
-                        next_page("page3B")
-                    else:
-                        next_page("page3C")
         else:
-            st.session_state["previous_page"] = st.session_state["page"]
-            if prediction_template.startswith("1"):
-                next_page("page3A")
-            elif prediction_template.startswith("2"):
-                next_page("page3B")
-            else:
-                next_page("page3C")
+            st.success(f"✅ 全てのインプットが計算式に含まれています！（{st.session_state['check_count']} 回チェック済み）")
+
+    # ▼ 入力確定ボタンが押されたときの処理（無条件でページ遷移）
+    if submitted:
+        prediction_template = st.session_state["user_input"].get("推測値のテンプレ", "")
+        st.session_state["previous_page"] = st.session_state["page"]
+        if prediction_template.startswith("1"):
+            next_page("page3A")
+        elif prediction_template.startswith("2"):
+            next_page("page3B")
+        else:
+            next_page("page3C")
+
 
 
 
