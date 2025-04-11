@@ -433,6 +433,9 @@ elif st.session_state["page"] == "page2A":
             submitted = st.form_submit_button("入力を確定")
         with col2:
             check_errors = st.form_submit_button("エラーチェック")
+            back_button = st.form_submit_button("戻る")
+            if back_button:
+                next_page("page1")
     
         # st.session_state 初期化（1回目だけ）
     if "check_count_2A" not in st.session_state:
@@ -501,7 +504,7 @@ elif st.session_state["page"] == "page2A":
         else:
             next_page("page3C")
     
-    if st.button("戻る"):
+    if back_button:
         next_page("page1")
 
 
@@ -754,6 +757,9 @@ elif st.session_state["page"] == "page2B":
             submitted = st.form_submit_button("入力を確定")
         with col2:
             check_errors = st.form_submit_button("エラーチェック")
+            back_button = st.form_submit_button("戻る")
+            if back_button:
+                next_page("page1")
     
         # st.session_state 初期化（1回目だけ）
     if "check_count_2B" not in st.session_state:
@@ -821,8 +827,8 @@ elif st.session_state["page"] == "page2B":
             next_page("page3B")
         else:
             next_page("page3C")
-
-    if st.button("戻る"):
+    
+    if back_button:
         next_page("page1")
 
 
@@ -1107,6 +1113,9 @@ elif st.session_state["page"] == "page2C":
             submitted = st.form_submit_button("入力を確定")
         with col2:
             check_errors = st.form_submit_button("エラーチェック")
+            back_button = st.form_submit_button("戻る")
+            if back_button:
+                next_page("page1")
     
         # st.session_state 初期化（1回目だけ）
     if "check_count_2C" not in st.session_state:
@@ -1174,8 +1183,8 @@ elif st.session_state["page"] == "page2C":
             next_page("page3B")
         else:
             next_page("page3C")
-
-    if st.button("戻る"):
+    
+    if back_button:
         next_page("page1")
 
 
@@ -1483,6 +1492,9 @@ elif st.session_state["page"] == "page2D":
             submitted = st.form_submit_button("入力を確定")
         with col2:
             check_errors = st.form_submit_button("エラーチェック")
+            back_button = st.form_submit_button("戻る")
+            if back_button:
+                next_page("page1")
     
         # st.session_state 初期化（1回目だけ）
     if "check_count_2D" not in st.session_state:
@@ -1550,8 +1562,8 @@ elif st.session_state["page"] == "page2D":
             next_page("page3B")
         else:
             next_page("page3C")
-
-    if st.button("戻る"):
+    
+    if back_button:
         next_page("page1")
 
 
@@ -1773,6 +1785,9 @@ elif st.session_state["page"] == "page2E":
             submitted = st.form_submit_button("入力を確定")
         with col2:
             check_errors = st.form_submit_button("エラーチェック")
+            back_button = st.form_submit_button("戻る")
+            if back_button:
+                next_page("page1")
     
         # st.session_state 初期化（1回目だけ）
     if "check_count_2E " not in st.session_state:
@@ -1840,8 +1855,8 @@ elif st.session_state["page"] == "page2E":
             next_page("page3B")
         else:
             next_page("page3C")
-
-    if st.button("戻る"):
+    
+    if back_button:
         next_page("page1")
 
 
@@ -2075,6 +2090,9 @@ elif st.session_state["page"] == "page2F":
             submitted = st.form_submit_button("入力を確定")
         with col2:
             check_errors = st.form_submit_button("エラーチェック")
+            back_button = st.form_submit_button("戻る")
+            if back_button:
+                next_page("page1")
     
         # st.session_state 初期化（1回目だけ）
     if "check_count_2F" not in st.session_state:
@@ -2142,8 +2160,8 @@ elif st.session_state["page"] == "page2F":
             next_page("page3B")
         else:
             next_page("page3C")
-
-    if st.button("戻る"):
+    
+    if back_button:
         next_page("page1")
 
 
