@@ -500,6 +500,9 @@ elif st.session_state["page"] == "page2A":
             next_page("page3B")
         else:
             next_page("page3C")
+    
+    if st.button("戻る"):
+        next_page("page1")
 
 
 
@@ -746,10 +749,72 @@ elif st.session_state["page"] == "page2B":
         prediction_template = st.selectbox("推測値のテンプレはどれを使用しますか？", ["1(容量推測)", "2(台数推測)", "3(自由入力)"])
         st.session_state["user_input"].setdefault("推測値のテンプレ", prediction_template)
         st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
-        submitted = st.form_submit_button("入力を確定")
+        col1, col2 = st.columns(2)
+        with col1:
+            submitted = st.form_submit_button("入力を確定")
+        with col2:
+            check_errors = st.form_submit_button("エラーチェック")
+    
+        # st.session_state 初期化（1回目だけ）
+    if "check_count_2B" not in st.session_state:
+        st.session_state["check_count_2B"] = 0
+    
 
+    # ▼ エラーチェックボタンが押されたときの処理
+    if check_errors:
+        st.session_state["check_count_2B"] += 1
+
+        # 入力確認のための全インプット名を収集（ラベル付き）
+        input_names = []
+        input_labels = []
+
+        name = st.session_state["user_input"].get("取得済みインプットの名前", "")
+        input_names.append(name)
+        input_labels.append(f"インプット: {name}")
+
+        for i in range(6):
+            name = st.session_state["user_input"].get(f"追加インプット{i+1}の名前", "")
+            input_names.append(name)
+            input_labels.append(f"インプット{i+1}: {name}")
+
+        for i in range(3):
+            key = ['電気の排出係数', '電気料金', '想定稼働年数'][i]
+            name = st.session_state["user_input"].get(f"規定値({key})の名前", "")
+            input_names.append(name)
+            input_labels.append(f"規定値({key}): {name}")
+
+        for i in range(13):
+            name = st.session_state["user_input"].get(f"規定値{i+1}_名前", "")
+            input_names.append(name)
+            input_labels.append(f"規定値{i+1}: {name}")
+
+        formula_texts = [
+            st.session_state["user_input"].get("GHG削減量計算式", ""),
+            st.session_state["user_input"].get("コスト削減額計算式", ""),
+            st.session_state["user_input"].get("投資額計算式", ""),
+            st.session_state["user_input"].get("追加投資額計算式", "")
+        ]
+
+        # チェック処理
+        missing_inputs = []
+        missing_labels = []
+        for name, label in zip(input_names, input_labels):
+            if name and not any(name in formula for formula in formula_texts):
+                missing_inputs.append(name)
+                missing_labels.append(label)
+
+        if missing_inputs:
+            st.warning(f"🔍 チェック結果（{st.session_state['check_count_2B']} 回目）:")
+            st.error("以下のインプットまたは規定値がいずれの計算式にも使用されていません:")
+            for label in missing_labels:
+                st.markdown(f"- {label}")
+        else:
+            st.success(f"✅ 全てのインプットが計算式に含まれています！（{st.session_state['check_count_2B']} 回チェック済み）")
+
+    # ▼ 入力確定ボタンが押されたときの処理（無条件でページ遷移）
     if submitted:
-        st.session_state["previous_page"] = st.session_state["page"]  # 現在のページを保存
+        prediction_template = st.session_state["user_input"].get("推測値のテンプレ", "")
+        st.session_state["previous_page"] = st.session_state["page"]
         if prediction_template.startswith("1"):
             next_page("page3A")
         elif prediction_template.startswith("2"):
@@ -759,6 +824,7 @@ elif st.session_state["page"] == "page2B":
 
     if st.button("戻る"):
         next_page("page1")
+
 
 
 elif st.session_state["page"] == "page2C":
@@ -1036,10 +1102,72 @@ elif st.session_state["page"] == "page2C":
         prediction_template = st.selectbox("推測値のテンプレはどれを使用しますか？", ["1(容量推測)", "2(台数推測)", "3(自由入力)"])
         st.session_state["user_input"].setdefault("推測値のテンプレ", prediction_template)
         st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
-        submitted = st.form_submit_button("入力を確定")
+        col1, col2 = st.columns(2)
+        with col1:
+            submitted = st.form_submit_button("入力を確定")
+        with col2:
+            check_errors = st.form_submit_button("エラーチェック")
+    
+        # st.session_state 初期化（1回目だけ）
+    if "check_count_2C" not in st.session_state:
+        st.session_state["check_count_2C"] = 0
+    
 
+    # ▼ エラーチェックボタンが押されたときの処理
+    if check_errors:
+        st.session_state["check_count_2C"] += 1
+
+        # 入力確認のための全インプット名を収集（ラベル付き）
+        input_names = []
+        input_labels = []
+
+        name = st.session_state["user_input"].get("取得済みインプットの名前", "")
+        input_names.append(name)
+        input_labels.append(f"インプット: {name}")
+
+        for i in range(6):
+            name = st.session_state["user_input"].get(f"追加インプット{i+1}の名前", "")
+            input_names.append(name)
+            input_labels.append(f"インプット{i+1}: {name}")
+
+        for i in range(3):
+            key = ['電気の排出係数', '電気料金', '想定稼働年数'][i]
+            name = st.session_state["user_input"].get(f"規定値({key})の名前", "")
+            input_names.append(name)
+            input_labels.append(f"規定値({key}): {name}")
+
+        for i in range(13):
+            name = st.session_state["user_input"].get(f"規定値{i+1}_名前", "")
+            input_names.append(name)
+            input_labels.append(f"規定値{i+1}: {name}")
+
+        formula_texts = [
+            st.session_state["user_input"].get("GHG削減量計算式", ""),
+            st.session_state["user_input"].get("コスト削減額計算式", ""),
+            st.session_state["user_input"].get("投資額計算式", ""),
+            st.session_state["user_input"].get("追加投資額計算式", "")
+        ]
+
+        # チェック処理
+        missing_inputs = []
+        missing_labels = []
+        for name, label in zip(input_names, input_labels):
+            if name and not any(name in formula for formula in formula_texts):
+                missing_inputs.append(name)
+                missing_labels.append(label)
+
+        if missing_inputs:
+            st.warning(f"🔍 チェック結果（{st.session_state['check_count_2C']} 回目）:")
+            st.error("以下のインプットまたは規定値がいずれの計算式にも使用されていません:")
+            for label in missing_labels:
+                st.markdown(f"- {label}")
+        else:
+            st.success(f"✅ 全てのインプットが計算式に含まれています！（{st.session_state['check_count_2C']} 回チェック済み）")
+
+    # ▼ 入力確定ボタンが押されたときの処理（無条件でページ遷移）
     if submitted:
-        st.session_state["previous_page"] = st.session_state["page"]  # 現在のページを保存
+        prediction_template = st.session_state["user_input"].get("推測値のテンプレ", "")
+        st.session_state["previous_page"] = st.session_state["page"]
         if prediction_template.startswith("1"):
             next_page("page3A")
         elif prediction_template.startswith("2"):
@@ -1350,10 +1478,72 @@ elif st.session_state["page"] == "page2D":
         prediction_template = st.selectbox("推測値のテンプレはどれを使用しますか？", ["1(容量推測)", "2(台数推測)", "3(自由入力)"])
         st.session_state["user_input"].setdefault("推測値のテンプレ", prediction_template)
         st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
-        submitted = st.form_submit_button("入力を確定")
+        col1, col2 = st.columns(2)
+        with col1:
+            submitted = st.form_submit_button("入力を確定")
+        with col2:
+            check_errors = st.form_submit_button("エラーチェック")
+    
+        # st.session_state 初期化（1回目だけ）
+    if "check_count_2D" not in st.session_state:
+        st.session_state["check_count_2D"] = 0
+    
 
+    # ▼ エラーチェックボタンが押されたときの処理
+    if check_errors:
+        st.session_state["check_count_2D"] += 1
+
+        # 入力確認のための全インプット名を収集（ラベル付き）
+        input_names = []
+        input_labels = []
+
+        name = st.session_state["user_input"].get("取得済みインプットの名前", "")
+        input_names.append(name)
+        input_labels.append(f"インプット: {name}")
+
+        for i in range(6):
+            name = st.session_state["user_input"].get(f"追加インプット{i+1}の名前", "")
+            input_names.append(name)
+            input_labels.append(f"インプット{i+1}: {name}")
+
+        for i in range(3):
+            key = ['電気の排出係数', '電気料金', '想定稼働年数'][i]
+            name = st.session_state["user_input"].get(f"規定値({key})の名前", "")
+            input_names.append(name)
+            input_labels.append(f"規定値({key}): {name}")
+
+        for i in range(13):
+            name = st.session_state["user_input"].get(f"規定値{i+1}_名前", "")
+            input_names.append(name)
+            input_labels.append(f"規定値{i+1}: {name}")
+
+        formula_texts = [
+            st.session_state["user_input"].get("GHG削減量計算式", ""),
+            st.session_state["user_input"].get("コスト削減額計算式", ""),
+            st.session_state["user_input"].get("投資額計算式", ""),
+            st.session_state["user_input"].get("追加投資額計算式", "")
+        ]
+
+        # チェック処理
+        missing_inputs = []
+        missing_labels = []
+        for name, label in zip(input_names, input_labels):
+            if name and not any(name in formula for formula in formula_texts):
+                missing_inputs.append(name)
+                missing_labels.append(label)
+
+        if missing_inputs:
+            st.warning(f"🔍 チェック結果（{st.session_state['check_count_2D']} 回目）:")
+            st.error("以下のインプットまたは規定値がいずれの計算式にも使用されていません:")
+            for label in missing_labels:
+                st.markdown(f"- {label}")
+        else:
+            st.success(f"✅ 全てのインプットが計算式に含まれています！（{st.session_state['check_count_2D']} 回チェック済み）")
+
+    # ▼ 入力確定ボタンが押されたときの処理（無条件でページ遷移）
     if submitted:
-        st.session_state["previous_page"] = st.session_state["page"]  # 現在のページを保存
+        prediction_template = st.session_state["user_input"].get("推測値のテンプレ", "")
+        st.session_state["previous_page"] = st.session_state["page"]
         if prediction_template.startswith("1"):
             next_page("page3A")
         elif prediction_template.startswith("2"):
@@ -1578,10 +1768,72 @@ elif st.session_state["page"] == "page2E":
         prediction_template = st.selectbox("推測値のテンプレはどれを使用しますか？", ["1(容量推測)", "2(台数推測)", "3(自由入力)"])
         st.session_state["user_input"].setdefault("推測値のテンプレ", prediction_template)
         st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
-        submitted = st.form_submit_button("入力を確定")
+        col1, col2 = st.columns(2)
+        with col1:
+            submitted = st.form_submit_button("入力を確定")
+        with col2:
+            check_errors = st.form_submit_button("エラーチェック")
+    
+        # st.session_state 初期化（1回目だけ）
+    if "check_count_2E " not in st.session_state:
+        st.session_state["check_count_2E"] = 0
+    
 
+    # ▼ エラーチェックボタンが押されたときの処理
+    if check_errors:
+        st.session_state["check_count_2E"] += 1
+
+        # 入力確認のための全インプット名を収集（ラベル付き）
+        input_names = []
+        input_labels = []
+
+        name = st.session_state["user_input"].get("取得済みインプットの名前", "")
+        input_names.append(name)
+        input_labels.append(f"インプット: {name}")
+
+        for i in range(6):
+            name = st.session_state["user_input"].get(f"追加インプット{i+1}の名前", "")
+            input_names.append(name)
+            input_labels.append(f"インプット{i+1}: {name}")
+
+        for i in range(3):
+            key = ['電気の排出係数', '電気料金', '想定稼働年数'][i]
+            name = st.session_state["user_input"].get(f"規定値({key})の名前", "")
+            input_names.append(name)
+            input_labels.append(f"規定値({key}): {name}")
+
+        for i in range(13):
+            name = st.session_state["user_input"].get(f"規定値{i+1}_名前", "")
+            input_names.append(name)
+            input_labels.append(f"規定値{i+1}: {name}")
+
+        formula_texts = [
+            st.session_state["user_input"].get("GHG削減量計算式", ""),
+            st.session_state["user_input"].get("コスト削減額計算式", ""),
+            st.session_state["user_input"].get("投資額計算式", ""),
+            st.session_state["user_input"].get("追加投資額計算式", "")
+        ]
+
+        # チェック処理
+        missing_inputs = []
+        missing_labels = []
+        for name, label in zip(input_names, input_labels):
+            if name and not any(name in formula for formula in formula_texts):
+                missing_inputs.append(name)
+                missing_labels.append(label)
+
+        if missing_inputs:
+            st.warning(f"🔍 チェック結果（{st.session_state['check_count_2E']} 回目）:")
+            st.error("以下のインプットまたは規定値がいずれの計算式にも使用されていません:")
+            for label in missing_labels:
+                st.markdown(f"- {label}")
+        else:
+            st.success(f"✅ 全てのインプットが計算式に含まれています！（{st.session_state['check_count_2E']} 回チェック済み）")
+
+    # ▼ 入力確定ボタンが押されたときの処理（無条件でページ遷移）
     if submitted:
-        st.session_state["previous_page"] = st.session_state["page"]  # 現在のページを保存
+        prediction_template = st.session_state["user_input"].get("推測値のテンプレ", "")
+        st.session_state["previous_page"] = st.session_state["page"]
         if prediction_template.startswith("1"):
             next_page("page3A")
         elif prediction_template.startswith("2"):
@@ -1818,10 +2070,72 @@ elif st.session_state["page"] == "page2F":
         prediction_template = st.selectbox("推測値のテンプレはどれを使用しますか？", ["1(容量推測)", "2(台数推測)", "3(自由入力)"])
         st.session_state["user_input"].setdefault("推測値のテンプレ", prediction_template)
         st.session_state["user_input"]["推測値のテンプレ"] = prediction_template
-        submitted = st.form_submit_button("入力を確定")
+        col1, col2 = st.columns(2)
+        with col1:
+            submitted = st.form_submit_button("入力を確定")
+        with col2:
+            check_errors = st.form_submit_button("エラーチェック")
+    
+        # st.session_state 初期化（1回目だけ）
+    if "check_count_2F" not in st.session_state:
+        st.session_state["check_count_2F"] = 0
+    
 
+    # ▼ エラーチェックボタンが押されたときの処理
+    if check_errors:
+        st.session_state["check_count_2F"] += 1
+
+        # 入力確認のための全インプット名を収集（ラベル付き）
+        input_names = []
+        input_labels = []
+
+        name = st.session_state["user_input"].get("取得済みインプットの名前", "")
+        input_names.append(name)
+        input_labels.append(f"インプット: {name}")
+
+        for i in range(6):
+            name = st.session_state["user_input"].get(f"追加インプット{i+1}の名前", "")
+            input_names.append(name)
+            input_labels.append(f"インプット{i+1}: {name}")
+
+        for i in range(3):
+            key = ['電気の排出係数', '電気料金', '想定稼働年数'][i]
+            name = st.session_state["user_input"].get(f"規定値({key})の名前", "")
+            input_names.append(name)
+            input_labels.append(f"規定値({key}): {name}")
+
+        for i in range(13):
+            name = st.session_state["user_input"].get(f"規定値{i+1}_名前", "")
+            input_names.append(name)
+            input_labels.append(f"規定値{i+1}: {name}")
+
+        formula_texts = [
+            st.session_state["user_input"].get("GHG削減量計算式", ""),
+            st.session_state["user_input"].get("コスト削減額計算式", ""),
+            st.session_state["user_input"].get("投資額計算式", ""),
+            st.session_state["user_input"].get("追加投資額計算式", "")
+        ]
+
+        # チェック処理
+        missing_inputs = []
+        missing_labels = []
+        for name, label in zip(input_names, input_labels):
+            if name and not any(name in formula for formula in formula_texts):
+                missing_inputs.append(name)
+                missing_labels.append(label)
+
+        if missing_inputs:
+            st.warning(f"🔍 チェック結果（{st.session_state['check_count_2F']} 回目）:")
+            st.error("以下のインプットまたは規定値がいずれの計算式にも使用されていません:")
+            for label in missing_labels:
+                st.markdown(f"- {label}")
+        else:
+            st.success(f"✅ 全てのインプットが計算式に含まれています！（{st.session_state['check_count_2F']} 回チェック済み）")
+
+    # ▼ 入力確定ボタンが押されたときの処理（無条件でページ遷移）
     if submitted:
-        st.session_state["previous_page"] = st.session_state["page"]  # 現在のページを保存
+        prediction_template = st.session_state["user_input"].get("推測値のテンプレ", "")
+        st.session_state["previous_page"] = st.session_state["page"]
         if prediction_template.startswith("1"):
             next_page("page3A")
         elif prediction_template.startswith("2"):
@@ -1971,16 +2285,57 @@ elif st.session_state["page"] == "page3A":
                 f"推測規定値{i+1}_説明",
                 value=st.session_state["user_input"][f"推測規定値{i+1}_説明"]
             )
-        
-        submitted_3A = st.form_submit_button("推測値(容量)を確定")
+      
+        col1, col2 = st.columns(2)
+        with col1:
+            submitted_3A = st.form_submit_button("推測値(容量)を確定")
+        with col2:
+            check_errors_3A = st.form_submit_button("エラーチェック")
 
+        if "check_count_3A" not in st.session_state:
+            st.session_state["check_count_3A"] = 0
 
+        if check_errors_3A:
+            st.session_state["check_count_3A"] += 1
+
+            input_names = []
+            input_labels = []
+
+            # 推測対象名
+            name = st.session_state["user_input"].get("推測対象", "")
+            input_names.append(name)
+            input_labels.append(f"推測対象: {name}")
+
+            # 推測式に使う規定値名
+            for i in range(4):
+                name = st.session_state["user_input"].get(f"推測規定値{i+1}_名前", "")
+                input_names.append(name)
+                input_labels.append(f"推測規定値{i+1}: {name}")
+
+            formula_text = st.session_state["user_input"].get("推測式", "")
+
+            missing_inputs = []
+            missing_labels = []
+            for name, label in zip(input_names, input_labels):
+                if name and name not in formula_text:
+                    missing_inputs.append(name)
+                    missing_labels.append(label)
+
+            if missing_inputs:
+                st.warning(f"\U0001F50D チェック結果（{st.session_state['check_count_3A']} 回目）:")
+                st.error("以下の入力項目が推測式に使用されていません:")
+                for label in missing_labels:
+                    st.markdown(f"- {label}")
+            else:
+                st.success(f"✅ 全ての項目が推測式に含まれています！（{st.session_state['check_count_3A']} 回チェック済み）")
 
     if submitted_3A:
         next_page("description")
+
     if "previous_page" in st.session_state:
         if st.button("戻る"):
             next_page(st.session_state["previous_page"])
+
 
 elif st.session_state["page"] == "page3B":
     st.title("台数推測入力")
@@ -2122,10 +2477,52 @@ elif st.session_state["page"] == "page3B":
                 value=st.session_state["user_input"][f"推測規定値{i+1}_説明"]
             )
         
-        submitted_3B = st.form_submit_button("推測値(台数)を確定")
-    
+        col1, col2 = st.columns(2)
+        with col1:
+            submitted_3B = st.form_submit_button("推測値(容量)を確定")
+        with col2:
+            check_errors_3B = st.form_submit_button("エラーチェック")
+
+        if "check_count_3B" not in st.session_state:
+            st.session_state["check_count_3B"] = 0
+
+        if check_errors_3B:
+            st.session_state["check_count_3B"] += 1
+
+            input_names = []
+            input_labels = []
+
+            # 推測対象名
+            name = st.session_state["user_input"].get("推測対象", "")
+            input_names.append(name)
+            input_labels.append(f"推測対象: {name}")
+
+            # 推測式に使う規定値名
+            for i in range(4):
+                name = st.session_state["user_input"].get(f"推測規定値{i+1}_名前", "")
+                input_names.append(name)
+                input_labels.append(f"推測規定値{i+1}: {name}")
+
+            formula_text = st.session_state["user_input"].get("推測式", "")
+
+            missing_inputs = []
+            missing_labels = []
+            for name, label in zip(input_names, input_labels):
+                if name and name not in formula_text:
+                    missing_inputs.append(name)
+                    missing_labels.append(label)
+
+            if missing_inputs:
+                st.warning(f"\U0001F50D チェック結果（{st.session_state['check_count_3B']} 回目）:")
+                st.error("以下の入力項目が推測式に使用されていません:")
+                for label in missing_labels:
+                    st.markdown(f"- {label}")
+            else:
+                st.success(f"✅ 全ての項目が推測式に含まれています！（{st.session_state['check_count_3B']} 回チェック済み）")
+
     if submitted_3B:
         next_page("description")
+
     if "previous_page" in st.session_state:
         if st.button("戻る"):
             next_page(st.session_state["previous_page"])
@@ -2190,11 +2587,53 @@ elif st.session_state["page"] == "page3C":
                 f"推測規定値{i+1}_説明",
                 value=st.session_state["user_input"][f"推測規定値{i+1}_説明"]
             )
-        
-        submitted_3C = st.form_submit_button("推測値(自由入力)を確定")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            submitted_3C = st.form_submit_button("推測値(容量)を確定")
+        with col2:
+            check_errors_3C = st.form_submit_button("エラーチェック")
+
+        if "check_count_3C" not in st.session_state:
+            st.session_state["check_count_3C"] = 0
+
+        if check_errors_3C:
+            st.session_state["check_count_3C"] += 1
+
+            input_names = []
+            input_labels = []
+
+            # 推測対象名
+            name = st.session_state["user_input"].get("推測対象", "")
+            input_names.append(name)
+            input_labels.append(f"推測対象: {name}")
+
+            # 推測式に使う規定値名
+            for i in range(4):
+                name = st.session_state["user_input"].get(f"推測規定値{i+1}_名前", "")
+                input_names.append(name)
+                input_labels.append(f"推測規定値{i+1}: {name}")
+
+            formula_text = st.session_state["user_input"].get("推測式", "")
+
+            missing_inputs = []
+            missing_labels = []
+            for name, label in zip(input_names, input_labels):
+                if name and name not in formula_text:
+                    missing_inputs.append(name)
+                    missing_labels.append(label)
+
+            if missing_inputs:
+                st.warning(f"\U0001F50D チェック結果（{st.session_state['check_count_3C']} 回目）:")
+                st.error("以下の入力項目が推測式に使用されていません:")
+                for label in missing_labels:
+                    st.markdown(f"- {label}")
+            else:
+                st.success(f"✅ 全ての項目が推測式に含まれています！（{st.session_state['check_count_3C']} 回チェック済み）")
 
     if submitted_3C:
         next_page("description")
+
     if "previous_page" in st.session_state:
         if st.button("戻る"):
             next_page(st.session_state["previous_page"])
