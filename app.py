@@ -2728,6 +2728,8 @@ elif st.session_state["page"] == "flag_input":
             index=2
         )
 
+        st.session_state["user_input"]["事例の多さフラグ"] =  (st.session_state["user_input"]["事例数フラグ"]-1) / 4
+
         # --- 施策実行に関するフラグ ---
         st.subheader("施策実行に関するフラグ（感覚値で構いません）")
 
