@@ -2754,13 +2754,253 @@ elif st.session_state["page"] == "flag_input":
 
         st.session_state["user_input"]["施策実行の簡単さフラグ"] = total_exec_flag_score / 8
 
-        submitted_flag_input = st.form_submit_button("送信")
+        submitted_flag_input = st.form_submit_button("次へ")
 
     if submitted_flag_input:
-        next_page("summary")
+        next_page("calculation")
 
     if st.button("戻る"):
         next_page("description")
+
+
+elif st.session_state["page"] == "calculation":
+    st.title("計算式シミュレーションページ")
+    st.write("以下の式に基づき、ユーザーが入力した値から計算を行います")
+
+    import re
+
+    if "calculation_results" not in st.session_state:
+        st.session_state["calculation_results"] = {}
+
+    def evaluate_formula(label, formula_key, override_inputs=None):
+        formula = st.session_state["user_input"].get(formula_key, "")
+
+        if not formula or formula.strip() == "なし":
+            st.info(f"{label}の計算式は未入力または'なし'のためスキップされました。")
+            return
+
+        st.subheader(f"対象の計算式：{label}")
+        st.markdown(f"```{formula}```")
+
+        values = {} if override_inputs is None else dict(override_inputs)
+
+        def set_if_not_override(key, value):
+            if override_inputs is None or key not in override_inputs:
+                values[key] = value
+
+        key = st.session_state["user_input"].get("取得済みインプットの名前", "")
+        val = st.session_state["user_input"].get("取得済みインプットの数字", 0.0)
+        if key:
+            set_if_not_override(key, val)
+
+        for i in range(6):
+            name = st.session_state["user_input"].get(f"追加インプット{i+1}の名前", "")
+            val = st.session_state["user_input"].get(f"追加インプット{i+1}の数字", 0.0)
+            if name:
+                set_if_not_override(name, val)
+
+        for key in ['電気の排出係数', '電気料金', '想定稼働年数']:
+            name = st.session_state["user_input"].get(f"規定値({key})の名前", "")
+            val = st.session_state["user_input"].get(f"規定値({key})の数字", 0.0)
+            if name:
+                set_if_not_override(name, val)
+
+        for i in range(13):
+            name = st.session_state["user_input"].get(f"規定値{i+1}_名前", "")
+            val = st.session_state["user_input"].get(f"規定値{i+1}_数字", 0.0)
+            if name:
+                set_if_not_override(name, val)
+
+        evaluated_formula = formula
+        for key, val in values.items():
+            evaluated_formula = evaluated_formula.replace(key, str(val))
+
+        st.subheader("置換後の計算式")
+        st.markdown(f"```{evaluated_formula}```")
+
+        evaluated_formula = re.sub(r"(\d+(?:\.\d+)?)<%>", r"(\1/100)", evaluated_formula)
+        evaluated_formula = re.sub(r"<[^>]+>", "", evaluated_formula)
+        evaluated_formula = evaluated_formula.replace("×", "*").replace("÷", "/")
+        evaluated_formula = evaluated_formula.replace(" ", "")
+
+        if "=" in evaluated_formula:
+            rhs = evaluated_formula.split("=")[1]
+        else:
+            rhs = evaluated_formula
+
+        try:
+            result = eval(rhs)
+            st.success(f"{label}の計算結果: {result:.2f}")
+            st.session_state["calculation_results"][label] = result
+            st.session_state["user_input"][f"{formula_key}計算結果"] = result
+            return result
+        except Exception as e:
+            st.error(f"{label}の計算エラー: {e}\n\n式: {rhs}")
+            return None
+
+    estimated_value = None
+    if "推測式" in st.session_state["user_input"] and st.session_state["user_input"]["推測式"].strip() != "なし":
+        st.header("\n\n---\n\n推測式の評価")
+
+        guess_values = {}
+        target_input_key = st.session_state["user_input"].get("推測対象", "")
+        input_index = int(target_input_key.split("_")[-1]) if target_input_key.startswith("additional_input_") else None
+
+        guess_formula = st.session_state["user_input"]["推測式"]
+        name = st.session_state["user_input"].get(f"追加インプット{input_index}の名前", "")
+        st.subheader(f"対象の計算式：推測式（追加インプット{input_index} = {name}）")
+        st.markdown(f"```{guess_formula}```")
+
+        for i in range(4):
+            name = st.session_state["user_input"].get(f"推測規定値{i+1}_名前", "")
+            val = st.session_state["user_input"].get(f"推測規定値{i+1}_数字", 0.0)
+            if name:
+                guess_values[name] = val
+
+        base_key = st.session_state["user_input"].get("取得済みインプットの名前", "")
+        base_val = st.session_state["user_input"].get("取得済みインプットの数字", 0.0)
+        if base_key:
+            guess_values[base_key] = base_val
+
+        for i in range(6):
+            name = st.session_state["user_input"].get(f"追加インプット{i+1}の名前", "")
+            val = st.session_state["user_input"].get(f"追加インプット{i+1}の数字", 0.0)
+            if name:
+                guess_values[name] = val
+
+        for key in ['電気の排出係数', '電気料金', '想定稼働年数']:
+            name = st.session_state["user_input"].get(f"規定値({key})の名前", "")
+            val = st.session_state["user_input"].get(f"規定値({key})の数字", 0.0)
+            if name:
+                guess_values[name] = val
+
+        for i in range(13):
+            name = st.session_state["user_input"].get(f"規定値{i+1}_名前", "")
+            val = st.session_state["user_input"].get(f"規定値{i+1}_数字", 0.0)
+            if name:
+                guess_values[name] = val
+
+        evaluated_formula = guess_formula
+        for key, val in guess_values.items():
+            evaluated_formula = evaluated_formula.replace(key, str(val))
+
+        st.subheader("置換後の計算式")
+        st.markdown(f"```{evaluated_formula}```")
+
+        evaluated_formula = re.sub(r"(\d+(?:\.\d+)?)<%>", r"(\1/100)", evaluated_formula)
+        evaluated_formula = re.sub(r"<[^>]+>", "", evaluated_formula)
+        evaluated_formula = evaluated_formula.replace("×", "*").replace("÷", "/")
+        evaluated_formula = evaluated_formula.replace(" ", "")
+
+        if "=" in evaluated_formula:
+            rhs = evaluated_formula.split("=")[1]
+        else:
+            rhs = evaluated_formula
+
+        try:
+            estimated_value = eval(rhs)
+            decimals = int(st.session_state["user_input"].get("小数点以下の桁数", 1))
+            estimated_value = round(estimated_value, decimals)
+            st.success(f"推測値: {estimated_value:.{decimals}f}")
+            if input_index is not None:
+                name_key = f"追加インプット{input_index}の名前"
+                name = st.session_state["user_input"].get(name_key, "")
+                if name:
+                    st.session_state["user_input"][f"追加インプット{input_index}の数字"] = estimated_value
+                    st.session_state["user_input"]["推測式計算結果"] = estimated_value
+        except Exception as e:
+            st.error(f"推測式の計算エラー: {e}\n\n式: {rhs}")
+
+    override_map = {}
+    if estimated_value is not None and input_index is not None:
+        name = st.session_state["user_input"].get(f"追加インプット{input_index}の名前", "")
+        if name:
+            override_map[name] = estimated_value
+
+    evaluate_formula("GHG削減量", "GHG削減量計算式", override_inputs=override_map)
+    evaluate_formula("コスト削減額", "コスト削減額計算式", override_inputs=override_map)
+    evaluate_formula("投資額", "投資額計算式", override_inputs=override_map)
+    evaluate_formula("追加投資額", "追加投資額計算式", override_inputs=override_map)
+
+        # --- 指標評価 ---
+    st.header("評価指標の算出(5段階評価)")
+
+    ghg = st.session_state["user_input"].get("GHG削減量計算式計算結果", 0.0)
+    cost = st.session_state["user_input"].get("コスト削減額計算式計算結果", 0.0)
+    invest = st.session_state["user_input"].get("投資額計算式計算結果", 0.0)
+    add_invest = st.session_state["user_input"].get("追加投資額計算式計算結果", 0.0)
+    years = st.session_state["user_input"].get("規定値(想定稼働年数)の数字", 0.0)
+
+    # 投資回収年数
+    if cost > 0:
+        payback = add_invest / cost
+    else:
+        payback = float('inf')
+
+    if payback <= 5:
+        payback_score = 5
+    elif payback <= 10:
+        payback_score = 4
+    elif payback <= 15:
+        payback_score = 3
+    elif payback <= 20:
+        payback_score = 2
+    else:
+        payback_score = 1
+
+    st.subheader("1. 投資回収年数")
+    st.write(f"シミュレーション結果: {payback:.2f} 年")
+    st.write(f"スコア: {payback_score}")
+    st.session_state["user_input"]["投資回収年数"] = payback
+    st.session_state["user_input"]["投資回収年数スコア"] = payback_score
+
+    # 経済収支÷CO2削減量（万円/ton）
+    if ghg * years > 0:
+        ratio = (cost * years - add_invest) / (ghg * years) / 10000  # 万円に変換
+    else:
+        ratio = float('inf')
+
+    if ratio >= 10:
+        ratio_score = 5
+    elif ratio >= 5:
+        ratio_score = 4
+    elif ratio >= 2:
+        ratio_score = 3
+    elif ratio >= 0:
+        ratio_score = 2
+    else:
+        ratio_score = 1
+
+    st.subheader("2. 経済収支÷CO2削減量")
+    st.write(f"シミュレーション結果: {ratio:.2f} 万円/ton-CO2e")
+    st.write(f"スコア: {ratio_score}")
+    st.session_state["user_input"]["経済収支÷CO2削減量"] = ratio
+    st.session_state["user_input"]["経済収支÷CO2削減量スコア"] = ratio_score
+
+    # CO2削減量規模
+    if ghg >= 50:
+        ghg_score = 5
+    elif ghg >= 10:
+        ghg_score = 4
+    elif ghg >= 5:
+        ghg_score = 3
+    elif ghg >= 2:
+        ghg_score = 2
+    else:
+        ghg_score = 1
+
+    st.subheader("3. CO2削減量の規模")
+    st.write(f"シミュレーション結果: {ghg:.2f} t-CO2/年")
+    st.write(f"スコア: {ghg_score}")
+    st.session_state["user_input"]["CO2削減量の規模"] = ghg
+    st.session_state["user_input"]["CO2削減量の規模スコア"] = ghg_score
+
+    # 正規化スコア（0〜1に変換）
+    st.session_state["user_input"]["投資回収年数スコア_正規化"] = (payback_score - 1) / 4
+    st.session_state["user_input"]["経済収支÷CO2削減量スコア_正規化"] = (ratio_score - 1) / 4
+    st.session_state["user_input"]["CO2削減量の規模スコア_正規化"] = (ghg_score - 1) / 4
+    if st.button("送信"):
+        next_page("summary")
 
 # ** サマリーページ **
 elif st.session_state["page"] == "summary":
