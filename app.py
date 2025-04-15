@@ -2699,10 +2699,60 @@ elif st.session_state["page"] == "description":
         submitted_description = st.form_submit_button("送信")
 
     if submitted_description:
-        next_page("summary")
+        next_page("flag_input")
     if "previous_page" in st.session_state:
         if st.button("戻る"):
             next_page(st.session_state["previous_page"])
+
+elif st.session_state["page"] == "flag_input":
+    st.title("フラグ入力")
+
+    with st.form("flag_input_form"):
+        # --- 施策種類フラグ ---
+        st.subheader("施策種類に関するフラグ（0 or 1）")
+        st.session_state["user_input"].setdefault("増加タグ", 0)
+        st.session_state["user_input"].setdefault("設備更新タグ", 0)
+        st.session_state["user_input"].setdefault("絶対値タグ", 0)
+
+        st.session_state["user_input"]["増加タグ"] = st.selectbox("増加タグ（例：燃料転換による燃料増加）", [0, 1], index=0)
+        st.session_state["user_input"]["設備更新タグ"] = st.selectbox("設備更新タグ", [0, 1], index=0)
+        st.session_state["user_input"]["絶対値タグ"] = st.selectbox("絶対値タグ", [0, 1], index=0)
+
+        # --- 事例数フラグ ---
+        st.subheader("事例数に関するフラグ（1〜5）")
+        st.session_state["user_input"].setdefault("事例数フラグ", 3)
+        st.session_state["user_input"]["事例数フラグ"] = st.selectbox(
+            "Web上での事例の多さ（業種を問わず）",
+            [5, 4, 3, 2, 1],
+            format_func=lambda x: f"{x} - {['数千件以上の事例がある', '数百件の事例がある', '数十件の事例がある', '4～10件の事例しか見つからない', '1～3件の事例しか見つからない'][5 - x]}",
+            index=2
+        )
+
+        # --- 施策実行に関するフラグ ---
+        st.subheader("施策実行に関するフラグ（以下は感覚値で構いません）")
+
+        exec_flags = [
+            ("自社だけでできるか", "自社だけでできる1 / できない0"),
+            ("メーカー候補はすぐ探せるか", "できる1 / できない0"),
+            ("工事なしでできるか", "できる1 / できない0"),
+            ("投資額が小さいか", "小さい1 / 大きい0 (目安：設備価格の30%以上で大きい)"),
+            ("準備期間が短いか", "短い1 / 長い0"),
+            ("工期が短いか", "短い1 / 長い0"),
+            ("他設備を止めずにできるか", "できる1 / できない0"),
+            ("導入時に他設備との接続確認が不要か", "不要1 / 必要0")
+        ]
+
+        for key, label in exec_flags:
+            st.session_state["user_input"].setdefault(key, 0)
+            st.session_state["user_input"][key] = st.selectbox(label, [0, 1], index=0, key=key)
+
+        submitted_flag_input = st.form_submit_button("送信")
+
+    if submitted_flag_input:
+        next_page("summary")
+
+    if st.button("戻る"):
+        next_page("description")
 
 # ** サマリーページ **
 elif st.session_state["page"] == "summary":
