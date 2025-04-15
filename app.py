@@ -2958,7 +2958,7 @@ elif st.session_state["page"] == "calculation":
     if ghg * years > 0:
         ratio = (cost * years - add_invest) / (ghg * years) / 10000  # 万円に変換
     else:
-        ratio = float('inf')
+        ratio = float('-inf')
 
     if ratio >= 10:
         ratio_score = 5
