@@ -2696,7 +2696,7 @@ elif st.session_state["page"] == "description":
         #     st.session_state["user_input"].setdefault(key, "")
         #     st.session_state["user_input"][key] = st.text_input(f"適用条件{i}", value=st.session_state["user_input"].get(key, ""))
         
-        submitted_description = st.form_submit_button("送信")
+        submitted_description = st.form_submit_button("次へ")
 
     if submitted_description:
         next_page("flag_input")
@@ -2714,7 +2714,7 @@ elif st.session_state["page"] == "flag_input":
         st.session_state["user_input"].setdefault("設備更新タグ", 0)
         st.session_state["user_input"].setdefault("絶対値タグ", 0)
 
-        st.session_state["user_input"]["増加タグ"] = st.selectbox("増加タグ（例：燃料転換による燃料増加）", [0, 1], index=0)
+        st.session_state["user_input"]["増加タグ"] = st.selectbox("増加タグ（燃料転換による燃料増加）", [0, 1], index=0)
         st.session_state["user_input"]["設備更新タグ"] = st.selectbox("設備更新タグ", [0, 1], index=0)
         st.session_state["user_input"]["絶対値タグ"] = st.selectbox("絶対値タグ", [0, 1], index=0)
 
@@ -2729,7 +2729,7 @@ elif st.session_state["page"] == "flag_input":
         )
 
         # --- 施策実行に関するフラグ ---
-        st.subheader("施策実行に関するフラグ（以下は感覚値で構いません）")
+        st.subheader("施策実行に関するフラグ（感覚値で構いません）")
 
         exec_flags = [
             ("自社だけでできるか", "自社だけでできる1 / できない0"),
@@ -2742,9 +2742,15 @@ elif st.session_state["page"] == "flag_input":
             ("導入時に他設備との接続確認が不要か", "不要1 / 必要0")
         ]
 
-        for key, label in exec_flags:
+        total_exec_flag_score = 0
+
+        for key, description in exec_flags:
+            st.markdown(f"**{key}**  ")
             st.session_state["user_input"].setdefault(key, 0)
-            st.session_state["user_input"][key] = st.selectbox(label, [0, 1], index=0, key=key)
+            st.session_state["user_input"][key] = st.selectbox(f"{description}", [0, 1], index=0, key=key)
+            total_exec_flag_score += st.session_state["user_input"][key]
+
+        st.session_state["user_input"]["施策実行の簡単さフラグ"] = total_exec_flag_score / 8
 
         submitted_flag_input = st.form_submit_button("送信")
 
