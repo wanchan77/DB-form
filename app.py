@@ -2776,8 +2776,10 @@ elif st.session_state["page"] == "calculation":
         formula = st.session_state["user_input"].get(formula_key, "")
 
         if not formula or formula.strip() == "なし":
-            st.info(f"{label}の計算式は未入力または'なし'のためスキップされました。")
-            return
+            st.warning(f"{label}の計算式は未入力または'なし'のため、0として処理されました。")
+            st.session_state["calculation_results"][label] = 0.0
+            st.session_state["user_input"][f"{formula_key}計算結果"] = 0.0
+            return 0.0
 
         st.subheader(f"対象の計算式：{label}")
         st.markdown(f"```{formula}```")
@@ -2921,6 +2923,11 @@ elif st.session_state["page"] == "calculation":
             estimated_value = 0.0
             st.session_state["user_input"]["推測式"] = guess_formula
             st.session_state["user_input"]["推測式計算結果"] = estimated_value
+        
+    if estimated_value is None:
+        st.warning("推測式が未入力または'なし'のため、0として処理されました。")
+        estimated_value = 0.0
+        st.session_state["user_input"]["推測式計算結果"] = estimated_value
 
     override_map = {}
     if estimated_value is not None and input_index is not None:
