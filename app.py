@@ -2829,14 +2829,21 @@ elif st.session_state["page"] == "calculation":
             rhs = evaluated_formula
 
         try:
-            result = eval(rhs)
-            st.success(f"{label}の計算結果: {result:.2f}")
-            st.session_state["calculation_results"][label] = result
-            st.session_state["user_input"][f"{formula_key}計算結果"] = result
+            if rhs.strip() in ["", "0", "0.0"]:
+                raise ZeroDivisionError("無効な式")
+            if rhs.strip() == "-inf":
+                result = float('-inf')
+            else:
+                result = eval(rhs)
+                st.success(f"{label}の計算結果: {result:.2f}")
+                st.session_state["calculation_results"][label] = result
+                st.session_state["user_input"][f"{formula_key}計算結果"] = result
             return result
         except Exception as e:
-            st.error(f"{label}の計算エラー: {e}\n\n式: {rhs}")
-            return None
+            st.warning(f"{label}の計算に失敗しました。値を0として処理します。エラー内容: {e}")
+            st.session_state["calculation_results"][label] = 0.0
+            st.session_state["user_input"][f"{formula_key}計算結果"] = 0.0
+            return 0.0
 
     estimated_value = None
     if "推測式" in st.session_state["user_input"] and st.session_state["user_input"]["推測式"].strip() != "なし":
@@ -2902,14 +2909,18 @@ elif st.session_state["page"] == "calculation":
             decimals = int(st.session_state["user_input"].get("小数点以下の桁数", 1))
             estimated_value = round(estimated_value, decimals)
             st.success(f"推測値: {estimated_value:.{decimals}f}")
+            st.session_state["user_input"]["推測式"] = guess_formula
+            st.session_state["user_input"]["推測式計算結果"] = estimated_value
             if input_index is not None:
                 name_key = f"追加インプット{input_index}の名前"
                 name = st.session_state["user_input"].get(name_key, "")
                 if name:
                     st.session_state["user_input"][f"追加インプット{input_index}の数字"] = estimated_value
-                    st.session_state["user_input"]["推測式計算結果"] = estimated_value
         except Exception as e:
-            st.error(f"推測式の計算エラー: {e}\n\n式: {rhs}")
+            st.warning(f"推測式の計算に失敗しました。値を0として処理します。エラー内容: {e}")
+            estimated_value = 0.0
+            st.session_state["user_input"]["推測式"] = guess_formula
+            st.session_state["user_input"]["推測式計算結果"] = estimated_value
 
     override_map = {}
     if estimated_value is not None and input_index is not None:
