@@ -3004,7 +3004,7 @@ elif st.session_state["page"] == "calculation":
     st.subheader("2. 経済収支÷CO2削減量")
     st.write(f"シミュレーション結果: {ratio:.2f} 万円/ton-CO2e")
     st.write(f"スコア: {ratio_score}")
-    if ratio == float('inf'):
+    if ratio == float('-inf'):
         st.session_state["user_input"]["経済収支÷CO2削減量"] = str(ratio)
     else:
         st.session_state["user_input"]["経済収支÷CO2削減量"] = ratio
