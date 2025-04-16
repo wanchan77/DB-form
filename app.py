@@ -2837,6 +2837,15 @@ elif st.session_state["page"] == "calculation":
                 result = float('-inf')
             else:
                 result = eval(rhs)
+                if isinstance(result, float):
+                    if result != result:  # NaN
+                        raise ValueError("計算結果がNaNです")
+                    if result == float("inf") or result == float("-inf"):
+                        # JSON非対応のため、文字列で保存
+                        st.warning(f"{label}の計算結果は {result} です（Google Sheetsでは文字列として送信されます）")
+                        st.session_state["calculation_results"][label] = str(result)
+                        st.session_state["user_input"][f"{formula_key}計算結果"] = str(result)
+                        return result
                 st.success(f"{label}の計算結果: {result:.2f}")
                 st.session_state["calculation_results"][label] = result
                 st.session_state["user_input"][f"{formula_key}計算結果"] = result
@@ -2969,7 +2978,10 @@ elif st.session_state["page"] == "calculation":
     st.subheader("1. 投資回収年数")
     st.write(f"シミュレーション結果: {payback:.2f} 年")
     st.write(f"スコア: {payback_score}")
-    st.session_state["user_input"]["投資回収年数"] = payback
+    if payback == float('inf'):
+        st.session_state["user_input"]["投資回収年数"] = str(payback)
+    else:
+        st.session_state["user_input"]["投資回収年数"] = payback
     st.session_state["user_input"]["投資回収年数スコア"] = payback_score
 
     # 経済収支÷CO2削減量（万円/ton）
@@ -2992,7 +3004,10 @@ elif st.session_state["page"] == "calculation":
     st.subheader("2. 経済収支÷CO2削減量")
     st.write(f"シミュレーション結果: {ratio:.2f} 万円/ton-CO2e")
     st.write(f"スコア: {ratio_score}")
-    st.session_state["user_input"]["経済収支÷CO2削減量"] = ratio
+    if ratio == float('inf'):
+        st.session_state["user_input"]["経済収支÷CO2削減量"] = str(ratio)
+    else:
+        st.session_state["user_input"]["経済収支÷CO2削減量"] = ratio
     st.session_state["user_input"]["経済収支÷CO2削減量スコア"] = ratio_score
 
     # CO2削減量規模
