@@ -2330,6 +2330,7 @@ elif st.session_state["page"] == "page3A":
                 st.success(f"✅ 全ての項目が推測式に含まれています！（{st.session_state['check_count_3A']} 回チェック済み）")
 
     if submitted_3A:
+        st.session_state["previous_page2"] = st.session_state["page"]
         next_page("description")
 
     if "previous_page" in st.session_state:
@@ -2521,6 +2522,7 @@ elif st.session_state["page"] == "page3B":
                 st.success(f"✅ 全ての項目が推測式に含まれています！（{st.session_state['check_count_3B']} 回チェック済み）")
 
     if submitted_3B:
+        st.session_state["previous_page2"] = st.session_state["page"]
         next_page("description")
 
     if "previous_page" in st.session_state:
@@ -2632,6 +2634,7 @@ elif st.session_state["page"] == "page3C":
                 st.success(f"✅ 全ての項目が推測式に含まれています！（{st.session_state['check_count_3C']} 回チェック済み）")
 
     if submitted_3C:
+        st.session_state["previous_page2"] = st.session_state["page"]
         next_page("description")
 
     if "previous_page" in st.session_state:
@@ -2700,9 +2703,9 @@ elif st.session_state["page"] == "description":
 
     if submitted_description:
         next_page("flag_input")
-    if "previous_page" in st.session_state:
+    if "previous_page2" in st.session_state:
         if st.button("戻る"):
-            next_page(st.session_state["previous_page"])
+            next_page(st.session_state["previous_page2"])
 
 elif st.session_state["page"] == "flag_input":
     st.title("フラグ入力")
