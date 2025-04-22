@@ -408,6 +408,8 @@ elif st.session_state["page"] == "page2A":
                 name, value, unit, description = "", None, "", ""
                 value_format = "%.2f"
             
+            value = 0.0 if value is None else float(value)
+            
             st.session_state["user_input"].setdefault(f"規定値{i+1}_名前", name)
             st.session_state["user_input"].setdefault(f"規定値{i+1}_数字", value)
             st.session_state["user_input"].setdefault(f"規定値{i+1}_単位", unit)
@@ -728,6 +730,8 @@ elif st.session_state["page"] == "page2B":
             else:
                 name, value, unit, description = "", None, "", ""
                 value_format = "%.2f"
+            
+            value = 0.0 if value is None else float(value)
             
             st.session_state["user_input"].setdefault(f"規定値{i+1}_名前", name)
             st.session_state["user_input"].setdefault(f"規定値{i+1}_数字", value)
@@ -1063,6 +1067,8 @@ elif st.session_state["page"] == "page2C":
             else:
                 name, value, unit, description = "", None, "", ""
                 value_format = "%.2f"
+            
+            value = 0.0 if value is None else float(value)
             
             st.session_state["user_input"].setdefault(f"規定値{i+1}_名前", name)
             st.session_state["user_input"].setdefault(f"規定値{i+1}_数字", value)
@@ -1440,6 +1446,8 @@ elif st.session_state["page"] == "page2D":
                 name, value, unit, description = "", None, "", ""
                 value_format = "%.2f"
             
+            value = 0.0 if value is None else float(value)
+            
             st.session_state["user_input"].setdefault(f"規定値{i+1}_名前", name)
             st.session_state["user_input"].setdefault(f"規定値{i+1}_数字", value)
             st.session_state["user_input"].setdefault(f"規定値{i+1}_単位", unit)
@@ -1747,6 +1755,8 @@ elif st.session_state["page"] == "page2E":
             else:
                 name, value, unit, description = "", None, "", ""
                 value_format = "%.2f"
+            
+            value = 0.0 if value is None else float(value)
             
             st.session_state["user_input"].setdefault(f"規定値{i+1}_名前", name)
             st.session_state["user_input"].setdefault(f"規定値{i+1}_数字", value)
