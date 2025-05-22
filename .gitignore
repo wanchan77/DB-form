@@ -1,0 +1,7 @@
+credentials.json
+.DS_Store
+.streamlit/
+*.csv
+*.xlsx
+__pycache__/
+*.pyc
