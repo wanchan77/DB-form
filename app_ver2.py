@@ -32,7 +32,7 @@ except Exception as e:
 ss = st.session_state
 
 # dfの読み込み
-df = pd.read_csv('/Users/wangzhende/intern/DBform/DB_20250425_industrial_steam_0528update.csv', low_memory=False)
+df = pd.read_csv('DB_20250425_industrial_steam_0528update.csv', low_memory=False)
 
 # === ページ管理のためのセッション変数を初期化 ===
 if "page" not in ss:
