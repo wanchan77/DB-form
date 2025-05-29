@@ -10495,6 +10495,7 @@ elif ss["page"] == "summary":
                 with json_path.open('w', encoding='utf-8') as f:
                     json.dump(data, f, ensure_ascii=False, indent=2)
                     st.success("✅ JSONファイルに保存されました")
+                    st.write("📄 実際に保存されたファイルの場所:", json_path.resolve())
     
                 # データが空でないことを確認
                 if not any(user_data):
