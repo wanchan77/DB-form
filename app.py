@@ -17,7 +17,7 @@ client = gspread.authorize(creds)
 
 # Google Sheets に接続
 try:
-    spreadsheet = client.open_by_key("1hPxEranr8y9teHaiT-6MMShsljbCRLhhrv3huMmOmaY")
+    spreadsheet = client.open_by_key("1A8zadA2NUQYNVO9awTpWmeEav1sxNJbBQva8jfdvTKs")
     sheet = spreadsheet.sheet1
     st.write("\u2705 Google Sheets に接続成功！")
 except Exception as e:

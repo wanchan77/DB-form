@@ -23,7 +23,7 @@ client = gspread.authorize(creds)
 # Google Sheets に接続
 try:
     spreadsheet = client.open_by_key("1A8zadA2NUQYNVO9awTpWmeEav1sxNJbBQva8jfdvTKs")
-    sheet = spreadsheet.sheet1
+    sheet = spreadsheet.worksheets("form2test")
     st.write("\u2705 Google Sheets に接続成功！")
 except Exception as e:
     st.error(f"\u274C Google Sheets への接続エラー: {e}")
@@ -32,7 +32,7 @@ except Exception as e:
 ss = st.session_state
 
 # dfの読み込み
-df = pd.read_csv('DB_20250425.csv', low_memory=False)
+df = pd.read_csv('/Users/wangzhende/intern/DBform/DB_20250425_industrial_steam_0528update.csv', low_memory=False)
 
 # === ページ管理のためのセッション変数を初期化 ===
 if "page" not in ss:
