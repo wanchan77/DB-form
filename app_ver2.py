@@ -23,7 +23,7 @@ client = gspread.authorize(creds)
 # Google Sheets に接続
 try:
     spreadsheet = client.open_by_key("1hPxEranr8y9teHaiT-6MMShsljbCRLhhrv3huMmOmaY")
-    sheet = spreadsheet.worksheets("form2test")
+    sheet = spreadsheet.worksheet("form2test")
     st.write("\u2705 Google Sheets に接続成功！")
 except Exception as e:
     st.error(f"\u274C Google Sheets への接続エラー: {e}")
@@ -10499,6 +10499,8 @@ elif ss["page"] == "summary":
                 if not any(user_data):
                     st.error("❌ 送信データが空のため、Google Sheets に追加できません。")
                 else:
+                    # デバッグ出力
+                    st.write("✅ sheetの型チェック:", type(sheet))
                     # **スプレッドシートの最終行を取得して、次の行を決定**
                     last_row = len(sheet.get_all_values())  # すべてのデータを取得し、最後の行番号を取得
     
