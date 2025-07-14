@@ -4,13 +4,13 @@ import os
 
 # ── 1. CSV読み込み ─────────────────────────────────────────
 df = pd.read_csv(
-    '/Users/wangzhende/intern/DBform/DB_20250425_confirmed.csv',
+    '/Users/wangzhende/intern/DBform/DB_20250602_104225.csv',
     low_memory=False
 )
 
 # ── 2. 列番号(0起点)指定 ─────────────────────────────────
 equip_indices = list(range(93, 200))
-fuel_indices  = list(range(200, 232))
+fuel_indices  = list(range(200, 234))
 
 # ── 3. フラグ列を強制的に int 化 ─────────────────────────────
 flag_idxs = equip_indices + fuel_indices

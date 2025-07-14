@@ -2,12 +2,12 @@ import pandas as pd
 from datetime import datetime
 
 # ファイル名
-main_file = "/Users/wangzhende/intern/DBform/DB_20250425_confirmed.csv"
-additional_file = "/Users/wangzhende/intern/DBform/final_converted_dbform_utf8_20250515_163100.csv"
+main_file = "/Users/wangzhende/intern/DBform/DB_20250602.csv"
+additional_file = "/Users/wangzhende/intern/DBform/csv/DB_20250605_163947.csv"
 
 # タイムスタンプ付き出力ファイル名
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-output_file = f"merged_{timestamp}.csv"
+output_file = f"DB_{timestamp}.csv"
 
 # メインファイル読み込み（ヘッダーあり）
 df_main = pd.read_csv(main_file, encoding='utf-8')

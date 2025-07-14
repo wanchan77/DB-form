@@ -5,9 +5,9 @@ from datetime import datetime
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 # ファイルパス（必要に応じて変更）
-input_csv_path = "/Users/wangzhende/intern/DBform/dbform_test_wind.csv"
-target_format_csv_path = "/Users/wangzhende/intern/DBform/DB_20250325_modify.csv"
-output_csv_path = f"/Users/wangzhende/intern/DBform/final_converted_dbform_utf8_{timestamp}.csv"
+input_csv_path = "/Users/wangzhende/intern/DBform/dbform_test_0605.csv"
+target_format_csv_path = "/Users/wangzhende/intern/DBform/DB_20250602.csv"
+output_csv_path = f"/Users/wangzhende/intern/DBform/DB_{timestamp}.csv"
 
 # 入力CSVとターゲットCSVを読み込む
 df_input = pd.read_csv(input_csv_path)
@@ -26,10 +26,10 @@ form_to_target_map = {
     61: 45, 63: 46, 64: 47, 65: 48, 67: 49, 68: 50, 69: 51, 71: 52, 72: 53, 73: 54,
     75: 55, 76: 56, 77: 57, 79: 58, 80: 59, 81: 60, 83: 61, 84: 62, 85: 63, 87: 64,
     88: 65, 89: 66, 91: 67, 92: 68, 93: 69, 95: 70, 96: 71, 97: 72,
-    100: 232, 101: 233, 102: 234, 103: 235, 104: 236, 105: 237,
-    107: 238, 108: 239, 109: 240, 111: 241, 112: 242, 113: 243,
-    115: 244, 116: 245, 117: 246, 119: 259, 120: 260,
-    121: 254, 122: 255, 123: 256, 124: 257,
+    100: 234, 101: 235, 102: 236, 103: 237, 104: 238, 105: 239,
+    107: 240, 108: 241, 109: 242, 111: 243, 112: 244, 113: 245,
+    115: 246, 116: 247, 117: 248, 119: 261, 120: 262,
+    121: 256, 122: 257, 123: 258, 124: 259,
 }
 
 # Scope1とScope2の設備名 → 英語コードの変換マッピング
@@ -142,6 +142,8 @@ scope2_mapping = {
     "現場用照明": "site_lighting",
     "曝気・水処理用ブロワ": "aeration_water_treatment_blower",
     "その他用途のブロワ": "other_purpose_blower",
+    "冷却塔":"cooling_tower",
+    "その他油圧式加工機械":"other_hydraulic_machining_machinery",
     "その他(SCOPE2)": "others_SCOPE2",
     "SCOPE2全体": "total_SCOPE2"
 }
@@ -194,7 +196,7 @@ scope1_id_map = {
     "クリーンルーム用空調(GHP)(パッケージ式)": (31, 0), "焼鈍炉": (32, 0), "乾燥炉": (33, 0), "焼結炉/焼成炉": (34, 0),
     "ダイカストマシン": (35, 0), "焼入れ炉": (36, 0), "鍛造炉・鍛造加熱炉": (37, 0), "メッキ槽・電着塗装": (38, 0),
     "焼戻し炉": (39, 0), "衣類用乾燥機": (40, 0), "工業用乾燥機": (41, 0), "自家用発電機": (42, 0),
-    "タクシー": (43, 1), "バス": (44, 1),
+    "タクシー": (43, 1), "バス": (44, 1)
 }
 
 scope2_id_map = {
@@ -219,7 +221,8 @@ scope2_id_map = {
     "放電加工機": (112, 0), "Scope2温水利用先_空調": (113, 1), "Scope2温水利用先_給湯": (114, 1),
     "Scope2温水利用先_その他": (115, 0), "Scope2冷水利用先_空調": (116, 1), "Scope2冷水利用先_その他": (117, 0),
     "現場用照明": (118, 0), "曝気・水処理用ブロワ": (119, 0), "その他用途のブロワ": (120, 0),
-    "電気タクシー": (121, 1), "電気バス": (122, 1),
+    "電気タクシー": (121, 1), "電気バス": (122, 1),"冷却塔":(123,0),
+    "その他油圧式加工機械":(124,0)
 }
 
 # 対応表：入力ファイル4列目 or 8列目の値をキーにして、出力ファイル248列目にセットする値
@@ -264,12 +267,12 @@ kubun_list = []    # 区分（入力ファイル4列目）
 
 pairing_issues = []  # 相互ID参照の失敗記録用
 
-# 設備名の処理対象列（Scope1: 94〜130列 → index 93-129、Scope2: 131〜200 → index 130-199）
+# 設備名の処理対象列（Scope1: 94〜130列 → index 93-129、Scope2: 131〜202 → index 130-201）
 scope1_cols = target_column_names[93:130]
-scope2_cols = target_column_names[130:200]
+scope2_cols = target_column_names[130:202]
 
-# Scope1/2に関係なく、燃料のフラグ対象列（共通）201〜231列 → index 200〜230
-fuel_cols = target_column_names[200:231]
+# Scope1/2に関係なく、燃料のフラグ対象列（共通）203〜233列 → index 202〜233
+fuel_cols = target_column_names[200:233]
 
 # 各行を処理
 for i, row in df_input.iterrows():
@@ -281,30 +284,30 @@ for i, row in df_input.iterrows():
         if pd.notna(val):
             new_row[72 + j] = val  # 出力73~75列 (index 72~74)
 
-    # 入力129列直接マッピング (index 128) → 出力249列 (index 248)
+    # 入力129列直接マッピング (index 128) → 出力251列 (index 250)
     val_129 = row[128]
     if pd.notna(val_129):
-        new_row[248] = val_129
+        new_row[250] = val_129
 
-    # 入力138列直接マッピング (index 137) → 出力253列 (index 252)
+    # 入力138列直接マッピング (index 137) → 出力255列 (index 254)
     val_138 = row[137]
     if pd.notna(val_138):
-        new_row[252] = val_138
+        new_row[254] = val_138
 
-    # 入力150列直接マッピング (index 149) → 出力250列 (index 249)
+    # 入力150列直接マッピング (index 149) → 出力252列 (index 251)
     val_150 = row[149]
     if pd.notna(val_150):
-        new_row[249] = val_150
+        new_row[251] = val_150
 
-    # 入力151列直接マッピング (index 150) → 出力251列 (index 250)
+    # 入力151列直接マッピング (index 150) → 出力253列 (index 252)
     val_151 = row[150]
     if pd.notna(val_151):
-        new_row[250] = val_151
+        new_row[252] = val_151
 
-    # 入力152列直接マッピング (index 151) → 出力252列 (index 251)
+    # 入力152列直接マッピング (index 151) → 出力254列 (index 253)
     val_152 = row[151]
     if pd.notna(val_152):
-        new_row[251] = val_152
+        new_row[253] = val_152
 
     # 通常のマッピングコピー
     for form_idx, target_idx in form_to_target_map.items():
@@ -360,34 +363,34 @@ for i, row in df_input.iterrows():
     # ID & フラグの処理
     if scope_val == "Scope1" and equipment_name in scope1_id_map:
         code, flag = scope1_id_map[equipment_name]
-        new_row[0] = f"{str(code).zfill(3)}s2r{i + 857}"
-        new_row[246] = str(flag)
+        new_row[0] = f"{str(code).zfill(3)}s2r{i + 891}"
+        new_row[248] = str(flag)
     elif scope_val == "Scope2" and equipment_name in scope2_id_map:
         code, flag = scope2_id_map[equipment_name]
-        new_row[0] = f"{str(code).zfill(3)}s2r{i + 857}"
-        new_row[246] = str(flag)
+        new_row[0] = f"{str(code).zfill(3)}s2r{i + 891}"
+        new_row[248] = str(flag)
     else:
         id_issues.append(i + 2)
         gs_flag_issues.append(i + 2)
 
     if val_col4 in category_mapping and category_mapping[val_col4] is not None:
-        new_row[247] = category_mapping[val_col4]  # ← df_final ではなく new_row を使うのが正解
+        new_row[249] = category_mapping[val_col4]  # ← df_final ではなく new_row を使うのが正解
     elif val_col4 == "5(自由入力)" and val_col8 in green_policy_mapping:
-        new_row[247] = green_policy_mapping[val_col8]
+        new_row[249] = green_policy_mapping[val_col8]
     else:
         category_issues.append(i + 2)
     
     # ▼ 入力125列目（index 124）：増加フラグが1 → new_row[247]を6に上書き
     if str(row[124]).strip() == "1":
-        new_row[247] = 6
+        new_row[249] = 6
 
     # ▼ 入力126列目（index 125）：設備更新フラグが1 かつ 現在 new_row[247] が3 → 4に変更
-    if new_row[247] == 3 and str(row[125]).strip() == "1":
-        new_row[247] = 4
+    if new_row[249] == 3 and str(row[125]).strip() == "1":
+        new_row[249] = 4
 
     # ▼ 入力127列目（index 126）：絶対値フラグが1 → new_row[247] を2に変更
     if str(row[126]).strip() == "1":
-        new_row[247] = 2
+        new_row[249] = 2
 
     id_list.append(new_row[0])             # 出力1列目のID
     shisaku_list.append(str(row[8]).strip())  # 施策名（入力ファイル9列目）
